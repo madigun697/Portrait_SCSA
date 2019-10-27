@@ -15,8 +15,8 @@ Portrait service tries to provide added values. One of the added values is the A
 
 ## Team Members
 
-Minkyung Kim: Project management, UI Design & Development, Search function
-Yula Seo: UI Development, Sharing/Event function
-Joohyung You: Back-end Development, OAuth, Technical management
-Junmo Choi: UI Development, Upload function, Android application development
-Donghun Han: UI Development, GPS Location function, Android application development
+* Minkyung Kim: Project management, UI Design & Development, Search function
+* Yula Seo: UI Development, Sharing/Event function
+* Joohyung You: Back-end Development, OAuth, Technical management
+* Junmo Choi: UI Development, Upload function, Android application development
+* Donghun Han: UI Development, GPS Location function, Android application development
