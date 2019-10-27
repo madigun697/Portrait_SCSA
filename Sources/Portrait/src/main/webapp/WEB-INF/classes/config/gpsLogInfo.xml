@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gpsLogInfo">
+
+	<resultMap id="gpsLogMap" type="GPSLog">
+		<id property="lat" column="LAT" />
+		<result property="lng" column="LNG" />
+		<result property="userId" column="USERID" />
+		<result property="logDate" column="LOGDATE" />
+	</resultMap>
+	
+	<!-- 안드로이드에서 입력된 GPS 정보 저장 -->
+	<insert id="insertLog">
+		INSERT INTO GPSLOG VALUES (#{lat}, #{lng}, #{userId}, SYSDATE)
+	</insert>
+	
+	<!-- 사진의 시간 전후 30분 이내의 GPS 정보 추출 -->
+	<select id="selectLog" parameterType="hashmap" resultType="GPSLog">
+		SELECT * FROM GPSLOG
+		WHERE LOGDATE <![CDATA[ < ]]>TO_DATE(#{time}, 'yyyymmddhh24miss') + 30/24/60
+		AND LOGDATE <![CDATA[ > ]]> TO_DATE(#{time}, 'yyyymmddhh24miss') - 30/24/60
+		AND USERID = #{userId}
+		ORDER BY LOGDATE
+	</select>
+
+</mapper>

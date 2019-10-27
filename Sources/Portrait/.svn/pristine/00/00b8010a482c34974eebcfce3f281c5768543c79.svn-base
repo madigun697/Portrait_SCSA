@@ -1,0 +1,425 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Portrait</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 구글 폰트 불러오기 -->
+<link href='http://fonts.googleapis.com/css?family=Kelly+Slab'
+	rel='stylesheet' type='text/css'>
+
+<!-- 부트스트랩, style, grid CSS 불러오기 -->
+<%-- <link href="css/bootstrap.css" rel="stylesheet"> --%>
+<link href="css/style.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/grid.css" />
+<!--grid slidShow -->
+
+<!--font-awesome for Icons 불러오기 -->
+<link href="css/font-awesome.css" rel="stylesheet">
+<link href="css/simple-sidebar.css" rel="stylesheet">
+
+<style type="text/css">
+		
+	.checkMan:checked + label > img {
+		display: inline;
+		border: 18px solid #F96E5B;
+		z-index: 100;
+			
+	}
+	
+	input[class="checkMan"] {
+        display: none;
+    }
+    
+    input[class="geoToggle"] {
+    	display: none;
+    }
+    
+    input[class="dateToggle"] {
+    	display: none;
+    }
+    
+    input[class="typeToggle"] {
+    	display: none;
+    }
+    
+    input[class="typeToggle"]:checked + ul{
+    	display: block;
+    }
+    
+    .boundarytype {
+    	color: #999999;
+    	
+    }
+   
+    .boundarytype ul {
+    	display: none;
+    	list-style: none;
+    	margin: 10px 0 10px 50px;
+    	height: 30px;
+   	}
+   	
+   	.boundarytype ul table {
+   		width: 45%;
+   	}
+   	
+   	input[class="geoToggle"]:checked + ul{
+    	display: block;
+    }
+   		
+	input[class="dateToggle"]:checked + ul{
+    	display: block;
+    }
+   	
+   	.geoList {
+    	list-style: none;
+    	margin: 10px 0 10px 50px;
+    	height: 30px;
+   	}
+   	
+   	.dateList {
+    	list-style: none;
+    	margin: 10px 0 10px 50px;
+    	height: 30px;
+   	}
+   	
+   	#keys{
+   		line-height: 30px;
+   	}
+   	
+   	#selectBoundary {
+   		display: none;
+   	}
+    
+</style>
+
+<script type="text/javascript">
+	function showSelector(id) {
+
+		if (id == 'geoList') {
+			if (document.getElementById('geoList').style.display == 'none') {
+				document.getElementById('geoList').style.display = 'block';
+				document.getElementById('geoList').style.height = '110px';
+				document.getElementById('dateList').style.display = 'none';
+			}
+		} else {
+				document.getElementById('geoList').style.display = 'none';
+				document.getElementById('dateList').style.display = 'block';
+				document.getElementById('dateList').style.height = '110px';
+			
+		}
+	}
+</script>
+
+<!-- 미리보기 작은 화면 210*210 -->
+<script id="img-wrapper-tmpl" type="text/x-jquery-tmpl">	
+			<div class="rg-image-wrapper">
+				{{if itemsCount > 1}}
+					<div class="rg-image-nav">
+						<a href="#" class="rg-image-nav-prev">Previous Image</a>
+						<a href="#" class="rg-image-nav-next">Next Image</a>
+					</div>
+				{{/if}}
+				<div class="rg-image"></div>
+				<div class="rg-loading"></div>
+				<div class="rg-caption-wrapper">
+					<div class="rg-caption" style="display:none;">
+						<p></p>
+					</div>
+				</div>
+			</div>
+
+
+</script>
+<script type="text/javascript">
+	 $(document).ready(function(){ 
+		 $("#wrapper").toggleClass("toggled");
+	}); 
+		 
+	 
+	 function click_get_photo(key) {
+			$.ajax({
+				url : "sortKeyPhotos.do",
+				type : "POST",
+				data : {
+					key : key
+				},
+				success : function(data) {
+					$("#sortMain").empty();
+					$.each(data, function(index, element) {
+						var photoId = element.photoId;
+						var photoUrl = element.photoUrl;
+						var itemHtml = ["<a href=\"#\">",
+						                "<input type=\"checkbox\" class=\"checkMan\" id=\"",
+						                element.photoId,
+						                "\" name =\"photode\" style=\"float: left; position: absolute;\" value=\"",
+						                element.photoId,
+						                "\" checked=\"checked\"/>",
+						                "<label for=\"",
+						                element.photoId,
+						                "\">",
+						                "<img src=\"",
+						                element.photoUrl,
+						                "?imgmax=512\" data-largesrc=\"",
+						                element.photoUrl,
+						                "?imgmax=2048\" alt=\"image01\" /><span>",
+						               	element.photoTitle,
+				                		"</span></label></a>"		
+						                ].join('\n');
+						$("#sortMain").append(itemHtml);
+					});
+				},
+				dataType: "json"
+			});
+		}
+	 
+</script>
+
+<!--grid slidShow / 크게 보는 화면-->
+<script id="previewTmpl" type="text/x-jquery-tmpl">
+			<div id="ib-img-preview" class="ib-preview">
+              <img src="${src}" alt="" id='ib-preview-img' class="ib-preview-img"/>
+               <span class="ib-preview-descr" style="display:none;">${description}</span>
+               <div class="ib-nav" style="display:none;">
+                    <span class="ib-nav-prev">Previous</span>
+                    <span class="ib-nav-next">Next</span>
+                </div>
+                <span class="ib-close" style="display:none;">Close Preview</span>
+ 				<span class="ib-modify" id="ib-modify">up</button>
+                <div class="ib-loading-large" style="display:none;">Loading...</div>	
+		</script>
+
+<script id="contentTmpl" type="text/x-jquery-tmpl">	
+			<div id="ib-content-preview" class="ib-content-preview">
+                <div class="ib-teaser" style="display:none;">{{html teaser}}</div>
+                <div class="ib-content-full" style="display:none;">{{html content}}</div>
+                <span class="ib-close" style="display:none;">Close Preview</span>
+<span class="ib-modify" id="ib-modify">up</button>
+            </div>
+		</script>
+<link rel="stylesheet" href="./css/jquery-ui.css">
+
+</head>
+
+<body class="clearfix" data-spy="scroll" data-target="#navbar"
+	data-offset="10">
+	
+	
+	<div id="wrapper1" >
+
+
+<!-- ----------------------------select mode----------------------------- -->
+
+
+		<!-- Sidebar -->
+		<div id="selectModeYo">
+		<div id="sidebar-wrapper1" style="top: auto;">
+			<ul class="sidebar-nav">
+				<li class="sidebar-brand">
+				<a href="#"> Photo Sort Guide </a></li>
+				<li class="boundarytype">
+					<label for="typeToggle">
+					<c:choose>
+						<c:when test="${requestScope.sortType == 'geo' }">
+							<img src="./img/geo_sort_select.png" width="30px" style="margin-right: 0;">
+							<c:choose>
+								 <c:when test="${requestScope.boundary == 500 }">
+									${requestScope.boundary }m로 모아보기
+								 </c:when>
+								 <c:otherwise>
+									${requestScope.boundary / 1000 }km로 모아보기					 
+								 </c:otherwise>
+							</c:choose>
+						</c:when>
+						<c:otherwise>
+							<img src="./img/date_sort_select.png" width="30px" style="margin-right: 0;">
+							<c:choose>
+								 <c:when test="${requestScope.boundary == 1 }">
+									1시간 단위로 모아보기
+								 </c:when>
+								 <c:when test="${requestScope.boundary == 7 }">
+									1일 단위로 모아보기
+								 </c:when>
+								 <c:when test="${requestScope.boundary == 30 }">
+									1개월 단위로 모아보기
+								 </c:when>
+								 <c:otherwise>
+									1년 단위로 모아보기					 
+								 </c:otherwise>
+							</c:choose>			
+						</c:otherwise>
+					</c:choose>
+					</label>
+					<input type="checkbox" class="typeToggle" id="typeToggle">
+				<ul>
+					<li>
+						<table>
+							<tr>
+								<c:choose>
+									<c:when test="${requestScope.sortType == 'geo' }">
+										<td class="geotype" align="center">
+											<img src="./img/geo_sort_select.png" width="30px" style="margin-right: 0;" onclick="showSelector('geoList')">
+										</td>
+										<td class="datetype" align="center">
+											<img src="./img/date_sort.png" width="30px" style="margin-right: 0;" onclick="showSelector('dateList')">
+										</td>
+									</c:when>
+									<c:otherwise>
+										<td class="geotype" align="center">
+											<img src="./img/geo_sort.png" width="30px" style="margin-right: 0;" onclick="showSelector('geoList')">
+										</td>
+										<td class="datetype" align="center">
+											<img src="./img/date_sort_select.png" width="30px" style="margin-right: 0;" onclick="showSelector('dateList')">
+										</td>
+									</c:otherwise>
+								</c:choose>
+							</tr>
+						</table>
+					</li>
+				</ul>
+				</li>
+				<li id="geoList" style="display:none">
+					<ul class="geoList">
+						<a href="sortPhotos.do?boundary=500&type=geo"><li id="geo500">500m</li></a>
+						<a href="sortPhotos.do?boundary=1000&type=geo"><li id="geo1000">1km</li></a>
+						<a href="sortPhotos.do?boundary=10000&type=geo"><li id="geo10000">10km</li></a>
+						<a href="sortPhotos.do?boundary=100000&type=geo"><li id="geo100000">100km</li></a>
+						<a href="sortPhotos.do?boundary=1000000&type=geo"><li id="geo1000000">1000km</li></a>
+					</ul>
+				</li>
+				<li id="dateList" style="display:none">
+					<ul class="dateList">
+						<a href="sortPhotos.do?boundary=1&type=date"><li id="date1">1시간</li></a>
+						<a href="sortPhotos.do?boundary=24&type=date"><li id="date24">1일</li></a>
+						<a href="sortPhotos.do?boundary=30&type=date"><li id="date30">1개월</li></a>
+						<a href="sortPhotos.do?boundary=365&type=date"><li id="date365">1년</li></a>
+					</ul>
+				</li>
+				<li id="keys">
+					<form class="form_updateEvent" name="form_updateEvent" method="post" action="updateEvent.do">
+						<c:forEach items="${requestScope.keySet }" var="key" varStatus="status">
+							<a><div id="${key }" onclick="click_get_photo('${key}')">${key } </div></a>
+						</c:forEach>
+		
+					</form>
+				</li>
+			</ul>
+		</div>
+		<div class="container-fluid clearfix" >
+			<div class="row-fluid">
+				<div id="welcome">
+					<div class="container-fluid clearfix"
+						style="padding: 0; overflow: hidden">
+						<div>
+							<div id="sortMain" class="ib-main">
+						
+						<c:forEach items="${sortList }" var="photo" varStatus="status">
+                        
+                        <a href="#">
+                        
+                        <input type="checkbox" class="checkMan" id='${photo.photoId}' name ="photode" style="float: left; position: absolute;"
+							 value="${photo.photoId}"  checked="checked"
+								 />
+                        <label for="${photo.photoId}">
+                        <img
+                           src="${photo.photoUrl }?imgmax=512"
+                           data-largesrc="${photo.photoUrl }?imgmax=2048"
+                           alt="image01" /><span>${photo.photoTitle }</span></label></a> 
+                        
+                        </c:forEach>
+						
+								<div class="clr"></div>
+							</div>
+						</div>
+					</div>
+					<!-- ib-main -->
+				</div>
+				<!-- ib-main-wrapper -->
+			</div>
+		</div>
+</div>
+<!-- ----------------------------------------------------------------- -->
+
+
+	</div>
+	<!-- /container -->
+	<div id="toTop">To Top</div>
+	<!-- Le javascript==================================================-->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<%--<script src="js/jquery-1.8.2.min.js"></script> --%>
+	<script src="js/lean-slider.min.js"></script>
+	<!-- Services Slider-->
+
+
+	<%--<script src="js/bootstrap.min.js"></script> --%>
+	<script src="js/jquery.easing.1.3.min.js"></script>
+
+
+	<script type="text/javascript" src="js/jquery.tmpl.min.js"></script>
+	<!--grid slidShow -->
+	<!-- &Services Gallery-->
+	<script type="text/javascript" src="js/jquery.kinetic.min.js"></script>
+	<!--grid slidShow -->
+	
+	<script type="text/javascript" src="js/jquery.iconmenu.min.js"></script>
+
+	<!--Services  Blocks-->
+	<script type="text/javascript" src="js/jquery-hover-effect.min.js"></script>
+	<script type="text/javascript" src="js/jquery.elastislide.min.js"></script>
+	<!-- Gallery Section-->
+	<script type="text/javascript" src="js/gallery.min.js"></script>
+	<!-- Gallery Section-->
+	<script type="text/javascript" src="js/jquery.tweet.min.js"></script>
+	<!--Tweet ticker-->
+
+	<script src="js/my_script.js"></script>
+
+
+
+
+	<!--jquery-classybox LightBox-->
+	<script>
+	
+ 	$(".lightbox span.zoom a").ClassyBox({
+			widthWindow : 900
+		}); 
+
+		function searchWord() {
+			alert($("#formSearch").val());
+		}
+		
+	
+		function updateEvent() {
+			   var chkFirList = document.getElementsByName('photode');
+			  var arrFir = new Array();
+			  
+			  for(i=0; i<chkFirList.length; i++){
+				  if(chkFirList[i].checked){
+					  arrFir.push(chkFirList[i].value); 
+				  }
+			  };
+			 /*  
+			  alert(arrFir.toString()); 
+			  alert(message) */
+			  document.form_updateEvent.action="updateEvent.do?arrFir="+arrFir;
+		}
+		
+		function deleteEvent(){
+			alert("삭제옵니꽈?");
+			   var chkFirList = document.getElementsByName('photode');
+			  var arrFir = new Array();
+			  
+			  for(i=0; i<chkFirList.length; i++){
+				  if(chkFirList[i].checked){
+					  arrFir.push(chkFirList[i].value); 
+				  }
+			  };
+			  document.form_deleteEvent.action="deleteEvent.do?arrFir="+arrFir;
+		}
+	</script>
+
+</body>
+</html>

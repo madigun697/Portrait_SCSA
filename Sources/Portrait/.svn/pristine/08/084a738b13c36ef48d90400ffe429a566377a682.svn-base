@@ -1,0 +1,387 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* Generic HTML styling ------------------------------------------------------------ */
+
+@font-face {
+    font-family: 'NeutonBold';
+    src: url('../fonts/neuton-bold-webfont.eot');
+    src: url('../fonts/neuton-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/neuton-bold-webfont.woff') format('woff'),
+         url('../fonts/neuton-bold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'NeutonItalic';
+    src: url('../fonts/neuton-italic-webfont.eot');
+    src: url('../fonts/neuton-italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/neuton-italic-webfont.woff') format('woff'),
+         url('../fonts/neuton-italic-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'NeutonRegular';
+    src: url('../fonts/neuton-regular-webfont.eot');
+    src: url('../fonts/neuton-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/neuton-regular-webfont.woff') format('woff'),
+         url('../fonts/neuton-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+* {
+	margin: 0;
+}
+
+html {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	height: 100%;
+	width: 100%;
+	font-family: "NeutonRegular", Georgia, Times, "Times New Roman", serif;
+}
+
+iframe { /* no stinkin scrollbars or borders! */
+	overflow: hidden;
+	border: none;
+}
+a, a:link, a:visited {
+	color: black;
+	text-decoration: underline;
+}
+a:hover, a:visited:hover {
+	text-decoration: none;
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a {
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a
+h6 a{
+    line-height: 1em;
+    margin: 0 0 0.5em 0;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.8em;
+}
+
+h3 {
+    font-size: 1.45em;
+}
+
+h4 {
+    font-size: 1.35em;
+}
+
+h5 {
+    font-size: 1.26em;
+}
+
+h6 {
+    font-size: 1.1em;
+}
+
+p, li, label {
+	font-size: 16px;
+	line-height: 1.25em;
+}
+
+.hr {
+	float: left;
+	width: 920px;
+	border-color:#dcdada #ffffff #ffffff;
+	border-left:0 solid #ffffff;
+	border-right:0 solid #ffffff;
+	border-style:solid;
+	border-width:1px 0;
+	clear:both;
+	height:0px;
+	margin:0px 10px;
+}
+
+p {
+	margin-bottom: 1.5em;
+}
+em, cite {
+	font-style: italic;
+}
+.strong {
+	font-weight: bold;
+}
+.big {
+	font-size: 2em;
+}
+.small {
+	font-size: .5em;
+}
+form, table, dl, menu {
+	margin: 1.12em 0;
+}
+table td, table th {
+	padding-right: 20px;
+}
+pre, code, samp, dfn, kbd, var, tt {
+	font: 12px/18px Consolas, Monaco, monospace;
+	margin-bottom: 1.5em;
+}
+
+sub {
+	vertical-align: sub;
+}
+sup {
+	vertical-align: super;
+}
+input[type="text"],  textarea,  select {
+	font-family: "NeutonRegular", Georgia, Times, "Times New Roman", serif;
+	font-size: 1em;
+	clear: right;
+}
+fieldset {
+	margin: 10px 0;
+	padding: 10px;
+	border: 2px groove;
+}
+fieldset legend {
+	padding: 0 5px;
+}
+object {
+	background:none repeat scroll 0 0 #F3F2F2;
+	border:1px solid #E1E1E1;
+	margin-top:0;
+	padding:6px;
+}
+
+dir,  dd {
+	margin: 0 0 0.5em 2em;
+	padding: 0;
+}
+
+/* generic content, does not inherit well -------------------------------------- */
+
+.postContent {
+}
+
+.postContent a, #tinymce a {
+	text-decoration: none;
+}
+
+.postContent a:hover, #tinymce a:hover {
+	text-decoration: underline;
+}
+
+.postContent ul, #tinymce ul {
+	list-style-type: disc;
+}
+
+.postContent ol, #tinymce ol {
+	list-style-type: decimal;
+
+}
+.postContent ul li, .postContent ol li, #tinymce ol li, #tinymce ul li {
+	margin-left: 2em;
+}
+
+.postContent ol ul, #tinymce o ul,
+.postContent ul ol, #tinymce ul lo {
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+.postContent blockquote, #tinymce blockquote {
+	clear: both;
+	background:transparent url('../images/generic/blockquote/quote-r.png') no-repeat scroll right bottom ;
+	color: #000000 ;
+	font-weight:bold;
+	letter-spacing:-1px;
+	margin: 0 0 1em 60%;
+	padding: 0 30px 0 0;
+	text-align:left;
+	width: 40%;
+	float: right;
+}
+.postContent blockquote p, #tinymce blockquote p {
+	background:transparent url('../images/generic/blockquote/quote-l.png') no-repeat scroll left top ;
+	border:0 none;
+	font-size:20px ;
+	line-height:1.3em ;
+	margin-bottom: 0 ;
+	padding: 0 0 0 35px ;
+	font-weight: bold;
+	font-style: italic;
+}
+
+.postContent img {
+	background: none;
+	border: 0px;
+	margin-top: 0;
+	max-width: 100%;
+}
+
+.embed-frame {
+	border-image: initial;
+	padding: 0.8%;
+	background: #FAFAFA;
+	border: #D9D9D9 1px solid;
+	border-image: initial;
+	border-radius: 0.7%;
+	box-shadow: #d1d1d1 0px 1px 4px;
+	margin-bottom: 1.5em;
+	clear: both;
+}
+
+.embed-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16/9 ratio */
+    padding-top: 30px; /* IE6 workaround*/
+    height: 0;
+    overflow: hidden;
+}
+
+.embed-container iframe,
+.embed-container object,
+.embed-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* WordPress specific ------------------------------------------------------------ */
+
+html .mceContentBody {
+	max-width: 584px;
+}
+
+.more-link {
+	font-weight: bold;
+	clear: both;
+}
+
+.size-thumbnail {
+	background:none repeat scroll 0 0 #F3F2F2;
+	border:0px;
+	margin-top:0;
+	padding:0;
+	max-width: 100%;
+}
+ .size-full {
+	background: none repeat scroll 0 0 #F3F2F2;
+	border: 0px;
+	margin-top: 0;
+	margin-bottom: 15px;
+	padding: 0px;
+	max-width: 100%;
+}
+.size-medium {
+	background:none repeat scroll 0 0 #F3F2F2;
+	border:0px;
+	margin-top:0;
+	padding:0;
+	max-width: 100%;
+}
+img.wpGallery {
+	width: 99%;
+	height: 250px;
+	max-width: 100%;
+}
+.wp-caption {
+	display: block;
+	border: 1px solid #E1E1E1;
+	text-align: center;
+	background-color: #F3F2F2;
+	padding-top: 0;
+	max-width: 100%;
+	margin-bottom: 1.5em;
+}
+.wp-caption a {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	max-width: 100%;
+}
+.wp-caption img {
+	border:0px solid #E1E1E1;
+	margin: 0px auto;
+	background: none;
+	max-width: 100%;
+}
+.wp-caption-dd {
+	margin-bottom: 1.5em;
+}
+.wp-caption-text, .wp-caption-dd {
+	font-size: 1em;
+	margin: 5px 0 5px 0;
+	max-width: 100%;
+}
+.alignleft {
+	float: left;
+}
+img.alignleft,
+.wp-caption.alignleft,
+.wp-caption-dd.alignleft {
+	margin-right: 1.5em;
+	margin-bottom: 1.5em;
+}
+.wp-caption.alignleft img
+.wp-caption-dd.alignleft img {
+	margin-right: 0;
+	margin-bottom: 0;
+	max-width: 100%;
+}
+.aligncenter {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+.alignright {
+	float: right;
+}
+img.alignright,
+.wp-caption.alignright,
+.wp-caption-dd.alignright {
+	margin-left: 1em;
+	margin-bottom: 1.5em;
+}
+.wp-caption.alignright img,
+.wp-caption-dd.alignright img {
+	margin-left: 0;
+	margin-bottom: 0;
+	max-width: 100%;
+}
+.alignnone {
+	margin-left: 0px;
+	margin-right: 0px;
+}

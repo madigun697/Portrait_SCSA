@@ -1,0 +1,13 @@
+package org.iptime.madigun697.dao;
+
+import org.iptime.madigun697.vo.User;
+
+public interface UserDAO {
+
+	// 사용자 로그인
+	String login(String userId);
+
+	// 신규 사용자 등록
+	void insertUser(User user);
+
+}

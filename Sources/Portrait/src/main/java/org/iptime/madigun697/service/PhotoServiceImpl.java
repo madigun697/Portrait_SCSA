@@ -1,0 +1,465 @@
+package org.iptime.madigun697.service;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.iptime.madigun697.dao.PhotoDAO;
+import org.iptime.madigun697.vo.People;
+import org.iptime.madigun697.vo.Photo;
+import org.iptime.madigun697.vo.Search;
+import org.iptime.madigun697.vo.Tag;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.api.client.http.HttpRequest;
+
+@Service
+public class PhotoServiceImpl implements PhotoService {
+	
+	@Autowired 
+	private PhotoDAO photoDao;
+	
+	// picasa와 portrait의 사진 동기화
+	@Override
+	public List<Photo> syncPhoto(List<Photo> photoList) {
+		// userId 추출
+		if (photoList.size() != 0) {
+			String userId = photoList.get(0).getUserId();
+			
+			// 기존 사진 데이터 삭제
+			boolean flag = false; 
+			do {
+				flag = photoDao.deletePhoto(userId);
+			}
+			while (!flag);
+			
+			// 추가 미분류 앨범 확인
+			photoList = updateUnsortPhotos(photoList, userId);
+			
+			// 새로운 사진 데이터로 업데이트
+			System.out.println(photoList.size());
+			photoDao.insertPhotoList(photoList);
+			
+			// DB에서 사진 로드
+			Photo photo = new Photo();
+			photo.setUserId(userId);
+			return photoDao.selectPhotoList(photo);
+		} else {
+			return photoList;
+		}
+	}
+
+	// 미분류 사진 앨범정보 Update
+	@Override
+	public List<Photo> updateUnsortPhotos(List<Photo> photoList, String userId) {
+		for (Photo photo : photoList) {
+			photo = parseComments(photo, userId);
+		}
+		return photoList;
+	}
+
+	// 사진 목록 불러오기
+	@Override
+	public List<Photo> getPhotoList(Photo photo) {
+		return photoDao.selectPhotoList(photo);
+	}
+
+	// 사진 삭제
+	@Override
+	public void deletePhoto(String photoId, String userId) {
+		photoDao.deletePhoto(photoId, userId);
+	}
+
+	// 사진 추가
+	@Override
+	public Photo newPhoto(Photo newPhoto, String userId) {
+		newPhoto = parseComments(newPhoto, userId);
+		photoDao.insertPhoto(newPhoto);
+		return newPhoto;
+	}
+
+	// 사진 불러오기
+	@Override
+	public Photo getPhoto(String photoId) {
+		return photoDao.selectPhoto(photoId);
+	}
+	
+	// 사진 수정하기
+	@Override
+	public void updatePhoto(Photo updatePhoto) {
+		photoDao.updatePhoto(updatePhoto);
+	}
+
+	// Comments에 입력된 커스텀 JSON 객체를 나누어 Photo 객체에 저장
+	public Photo parseComments(Photo photo, String userId) {
+		JSONObject desc = new JSONObject(photo.getDescription());
+		
+		if (desc.has("album")) {
+			photo.setAlbumId(desc.get("album").toString());
+		}
+		if (desc.has("event")) {
+			photo.setEventId(desc.get("event").toString());
+		}
+		if (desc.has("time")) {
+			if (desc.get("time").toString().trim().length() != 0) {
+				photo.setTime(desc.get("time").toString());
+			}
+		}
+		if (desc.has("comments")) {	
+			photo.setDescription(desc.get("comments").toString());
+		} else {
+			photo.setDescription("");
+		}
+		
+		// 앨범 아이디가 없는 경우 미분류 앨범으로 지정
+		if (photo.getAlbumId() == null || photo.getAlbumId().trim().length() == 0) {
+			photo.setAlbumId(userId + "_unsort");
+			}
+		return photo;
+	}
+
+	// 특정 인물이 포함된 사진 중 랜덤 1장의 URL 추출
+	@Override
+	public String getPhotoUrl(String peopleName, String userId) {
+		People people = new People();
+		people.setPeopleName(peopleName);
+		people.setUserId(userId);
+		return photoDao.selectPhotoUrl(people);
+	}
+
+	// 특정 인물이 포함된 사진 목록 추출
+	@Override
+	public List<Photo> getPeoplePhotoList(People people) {
+		return photoDao.selectPeoplePhotoList(people);
+	}
+	
+	// 단위 시간에 따라 사진 목록 추출
+	@Override
+	public Map<String, List<Photo>> sortByDate(String userId, int boundary) {
+		
+		Map<String, List<Photo>> sortPhotoMap = new HashMap<String, List<Photo>>();
+		
+		Photo _photo = new Photo();
+		_photo.setUserId(userId);
+		_photo.setAlbumId(userId+"_unsort");
+		List<Photo> selectPhotoList = photoDao.selectPhotoList(_photo);
+		List<Photo> sortList = new ArrayList<Photo>();
+		
+		String pattern;
+		String pattern2;
+		
+		switch (boundary) {
+		case 1:
+			pattern = "YYYY-MM-dd-HH";
+			pattern2 = "YYYY년 MM월 dd일 HH시";
+			break;
+		case 24:
+			pattern = "YYYY-MM-dd";
+			pattern2 = "YYYY년 MM월 dd일";
+			break;
+		case 30:
+			pattern = "YYYY-MM";
+			pattern2 = "YYYY년 MM월";
+			break;
+		default:
+			pattern = "YYYY";
+			pattern2 = "YYYY년";
+			break;
+		}
+		
+			String keyTimeStamp = null;
+			String keyTime = null;
+			String[] keyTimeArr = null;
+
+			for (int i = 0; i < selectPhotoList.size(); i++) {
+				if (selectPhotoList.get(i).getTime() != null) {
+					String pTime = convertTimestamp(Long.parseLong(selectPhotoList.get(i).getTime()), pattern);
+					String[] pTimeArr = pTime.split("-");
+					
+					if (i == 0) {
+						sortList.add(selectPhotoList.get(i));
+						System.out.println("add: " + selectPhotoList.get(i));
+						keyTimeStamp = selectPhotoList.get(i).getTime();
+						keyTime = pTime;
+						keyTimeArr = keyTime.split("-");
+					} else {
+						boolean flag = true;
+						
+						// 기준과 비교
+						for (int j = 0; j < pTimeArr.length; j++) {
+							if (!pTimeArr[j].toString().equals(keyTimeArr[j].toString())) {
+								flag = false;
+								break;
+							}
+						}
+						
+						if (flag) {
+							sortList.add(selectPhotoList.get(i));
+						} else {
+							sortPhotoMap.put(convertTimestamp(Long.parseLong(keyTimeStamp), pattern2), sortList);
+							sortList = new ArrayList<Photo>();
+							sortList.add(selectPhotoList.get(i));
+							keyTimeStamp = selectPhotoList.get(i).getTime();
+							keyTime = pTime;
+							keyTimeArr = keyTime.split("-");
+						}
+						
+					}
+				}
+				if (i == selectPhotoList.size()-1) {
+					sortPhotoMap.put(convertTimestamp(Long.parseLong(keyTimeStamp), pattern2), sortList);
+				}
+			}
+
+		return sortPhotoMap;
+	}
+
+	// 범위에 따라 사진 목록 추출
+	@Override
+	public Map<String, List<Photo>> sortByGeotag(String userId, int boundary) throws Exception {
+		
+		System.out.println(boundary);
+		
+		Map<String, List<Photo>> sortPhotoMap = new HashMap<String, List<Photo>>();
+
+		Photo _photo = new Photo();
+		_photo.setUserId(userId);
+		_photo.setAlbumId(userId+"_unsort");
+		List<Photo> selectPhotoList = photoDao.selectPhotoList(_photo);
+		
+		do {
+			// 사진 객체를 담을 list 생성
+			List<Photo> sortList = new ArrayList<Photo>();
+			List<Photo> outList = new ArrayList<Photo>();
+			JSONObject addrJson;
+			String addr = null;
+
+			HttpClient client = new DefaultHttpClient();
+			
+			double initLat = 0, initLon = 0, lat = 0, lon = 0;
+
+			// 전체 사진에서 거리를 확인
+			for (int i = 0; i < selectPhotoList.size(); i++) {
+				
+				if (selectPhotoList.get(i).getGeoTag() == null || selectPhotoList.get(i).getGeoTag().trim().length() == 0) {
+					outList.add(selectPhotoList.get(i));
+				} else {
+					// 첫 사진을 기준으로 설정
+					if (sortList.size() == 0) {
+						String[] geoArr = selectPhotoList.get(i).getGeoTag().split(" ");
+						initLat = Double.parseDouble(geoArr[0]);
+						initLon = Double.parseDouble(geoArr[1]);
+						sortList.add(selectPhotoList.get(i));
+						outList.add(selectPhotoList.get(i));
+						
+						HttpGet get = new HttpGet("http://maps.googleapis.com/maps/api/geocode/json?latlng="+initLat+","+initLon+"&language=ko");
+						HttpResponse resp = client.execute(get);
+	
+						InputStreamReader is = new InputStreamReader(resp.getEntity().getContent(), "UTF-8");
+						BufferedReader br = new BufferedReader(is);
+
+						StringBuffer _source = new StringBuffer();
+                        String line = "";
+                        while ((line = br.readLine()) != null) {
+                                _source.append(line);
+                        }
+						String source = _source.toString();
+						addrJson = new JSONObject(source);
+						
+						int size = addrJson.getJSONArray("results").length();
+						int sizeA = 0, sizeB = 0, sizeC = 0, sizeD = 0, sizeE = 0; 
+						
+						if (size >= 5) {
+							sizeA = size-5;
+							sizeB = size-4;
+							sizeC = size-3;
+							sizeD = size-2;
+							sizeE = size-1;
+						} else if (size == 4) {
+							sizeA = size-4;
+							sizeB = size-4;
+							sizeC = size-3;
+							sizeD = size-2;
+							sizeE = size-1;
+						} else if (size == 3) {
+							sizeA = size-3;
+							sizeB = size-3;
+							sizeC = size-3;
+							sizeD = size-2;
+							sizeE = size-1;
+						} else if (size == 2) {
+							sizeA = size-2;
+							sizeB = size-2;
+							sizeC = size-2;
+							sizeD = size-2;
+							sizeE = size-1;
+						} else if (size == 1) {
+							sizeA = size-1;
+							sizeB = size-1;
+							sizeC = size-1;
+							sizeD = size-1;
+							sizeE = size-1;
+						}
+							
+						if (boundary == 500) {
+							addr = addrJson.getJSONArray("results").getJSONObject(sizeA).getString("formatted_address");
+						} else if (boundary == 1000) {
+							addr = addrJson.getJSONArray("results").getJSONObject(sizeB).getString("formatted_address");
+						} else if (boundary == 10000) {
+							addr = addrJson.getJSONArray("results").getJSONObject(sizeC).getString("formatted_address");
+						} else if (boundary == 100000) {
+							addr = addrJson.getJSONArray("results").getJSONObject(sizeD).getString("formatted_address");
+						} else if (boundary == 1000000) {
+							addr = addrJson.getJSONArray("results").getJSONObject(sizeE).getString("formatted_address");
+						}
+						
+					// 첫 사진과 나머지 사진과의 거리 측정
+					} else {
+						String[] geoArr = selectPhotoList.get(i).getGeoTag().split(" ");
+						lat = Double.parseDouble(geoArr[0]);
+						lon = Double.parseDouble(geoArr[1]);
+					}
+					
+					// 두 지점 간의 거리(m로 환산)
+					double theta, dist;
+					theta = initLon - lon;
+					
+					dist = Math.sin(deg2rad(initLat)) * Math.sin(deg2rad(lat)) + Math.cos(deg2rad(initLat))
+							* Math.cos(deg2rad(lat)) * Math.cos(deg2rad(theta));
+					dist = Math.acos(dist);
+					dist = rad2deg(dist);
+					dist = dist * 60 * 1.1515 * 1.609344 * 1000; 
+					
+					if (dist <= boundary) {
+						sortList.add(selectPhotoList.get(i));
+						outList.add(selectPhotoList.get(i));
+					}
+				}
+				// for문 끝
+			}
+			
+			sortPhotoMap.put(addr, sortList);
+			
+			for (Photo photo : outList) {
+				selectPhotoList.remove(photo);
+			}
+			
+		} while (selectPhotoList.size() != 0);
+			
+		return sortPhotoMap;
+	}
+	
+	// 특정 사진의 주변 사진 목록 추출
+	@Override
+	public List<Photo> getNearByPhotos(String photoId, String userId) {
+		
+		Photo basisPhoto = photoDao.selectPhoto(photoId);
+		String[] basisGeo = basisPhoto.getGeoTag().split(" ");
+		
+		Photo _photo = new Photo();
+		_photo.setUserId(userId);
+		List<Photo> allPhotos = photoDao.selectPhotoList(_photo);
+		
+		List<Photo> nearByList = new ArrayList<Photo>();
+		
+		double basisLat = Double.parseDouble(basisGeo[0]), basisLon = Double.parseDouble(basisGeo[1]), lat = 0, lon = 0;
+		
+		for (Photo photo : allPhotos) {
+			if (photo.getGeoTag() != null) {
+				String[] geoArr = photo.getGeoTag().split(" ");
+				lat = Double.parseDouble(geoArr[0]);
+				lon = Double.parseDouble(geoArr[1]);
+				
+				// 두 지점 간의 거리(m로 환산)
+				double theta, dist;
+				theta = basisLon - lon;
+				
+				dist = Math.sin(deg2rad(basisLat)) * Math.sin(deg2rad(lat)) + Math.cos(deg2rad(basisLat))
+						* Math.cos(deg2rad(lat)) * Math.cos(deg2rad(theta));
+				dist = Math.acos(dist);
+				dist = rad2deg(dist);
+				dist = dist * 60 * 1.1515 * 1.609344 * 1000; 
+				
+				if (dist <= 1500) {
+					nearByList.add(photo);
+				}
+			}
+		}
+		
+		return nearByList;
+	}
+
+	private double deg2rad(double deg) // 주어진 도(degree) 값을 라디언으로 변환
+	{
+		return (double)(deg * Math.PI / (double)180d);
+	}
+
+	private double rad2deg(double rad) // 주어진 라디언(radian) 값을 도(degree) 값으로 변환
+	{
+		return (double)(rad * (double)180d / Math.PI);
+	}
+	
+	/*
+     * Timestamp를 시간형태의 String으로 변환
+     */
+    private String convertTimestamp(Long timestamp, String pattern) {
+            SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+            String time = formatter.format(new Timestamp(timestamp));
+            return time;
+    }
+    
+    // 앨범 내의 사진 갯수 추출
+    @Override
+	public int countPhoto(String albumId) {
+		return photoDao.selectCountPhoto(albumId);
+	}
+
+    // 검색기능
+	@Override
+	public List<Photo> search(Search keyWords) {
+		
+		List<Photo> searchResult = photoDao.search(keyWords);
+		
+		if (keyWords.getGeoPhotoList() != null) {
+			List<String> geoPhotoList = keyWords.getGeoPhotoList();
+			List<Photo> outList = new ArrayList<Photo>();
+	
+			for (Photo photo : searchResult) {
+				boolean flag = true;
+				for (String photoId : geoPhotoList) {
+					if (photo.getPhotoId().equals(photoId)) {
+						flag = false;
+					}
+				}
+				if (flag) {
+					outList.add(photo);
+				}
+			}
+			
+			for (Photo photo : outList) {
+				searchResult.remove(photo);
+			}
+		}
+		
+		return searchResult;
+	}
+    
+}

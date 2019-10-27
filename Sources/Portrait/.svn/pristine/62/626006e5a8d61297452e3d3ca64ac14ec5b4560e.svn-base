@@ -1,0 +1,378 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@page import="org.iptime.madigun697.util.AuthHelper"%>
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+body {
+	font-family: '맑은 고딕';
+}
+
+a.no-uline {
+	text-decoration: none
+}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- 구글 폰트 불러오기 -->
+<link href='http://fonts.googleapis.com/css?family=Kelly+Slab'
+	rel='stylesheet' type='text/css'>
+<!-- 부트스트랩, style, grid CSS 불러오기 -->
+<link href="./css/bootstrap.css" rel="stylesheet">
+<link href="./css/style.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="./css/grid.css" />
+<link rel="stylesheet" href="./css/jquery-ui.css">
+
+<!-- search CSS 불러오기 -->
+<link href='http://fonts.googleapis.com/css?family=Raleway:100,700,800'
+	rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css"
+	href="fonts/font-awesome-4.2.0/css/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="css/search/normalize.css" />
+<link rel="stylesheet" type="text/css" href="css/search/demo.css" />
+<link rel="stylesheet" type="text/css" href="css/search/component.css" />
+
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+
+<style type="text/css">
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	font-family: '맑은 고딕';
+}
+</style>
+
+<c:if test="${requestScope.content != 'peopleView.jsp'}">
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+</c:if>
+
+</head>
+<body>
+	<div>
+
+		<c:choose>
+			<c:when test="${empty albumList}">
+
+
+				<div id="navbar" class="navbar navbar-static-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<a class="btn btn-navbar" data-toggle="collapse"
+								data-target=".nav-collapse"> <span class="icon-bar"></span>
+								<span class="icon-bar"></span> <span class="icon-bar"></span>
+							</a> <a class="brand" href="index.do">Portrait<span>memories</span>
+							</a>
+							<div class="nav-collapse collapse pull-right">
+								<ul class="nav">
+									<li><a href="#About">About</a></li>
+									<li><a href="#Services">Services</a></li>
+									<li class="" style="color: red;">
+										<%
+											final AuthHelper helper = new AuthHelper();
+													out.println("<a href='" + helper.buildLoginUrl() + "&access_type=offline"
+															+ "'>LOGIN</a>");
+													session.setAttribute("state", helper.getStateToken());
+										%>
+
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</c:when>
+			<c:otherwise>
+
+				<div id="navbar" class="navbar navbar-static-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<a class="btn btn-navbar" data-toggle="collapse"
+								data-target=".nav-collapse"> <span class="icon-bar"></span>
+								<span class="icon-bar"></span> <span class="icon-bar"></span>
+							</a><a class="brand" href="home.do">Portrait<span>memories</span>
+							</a>
+							<div class="nav-collapse collapse pull-right"
+								style="padding-right: 5%;">
+								<ul class="nav">
+									<li><a href="home.do">Home</a></li>
+									<li><a href="hello.do">Album</a></li>
+									<li><a href="timeLinePage.do">TimeLine</a></li>
+									<li><a href="peopleView.do">People</a></li>
+									<li><a href="locationView.do">Location</a></li>
+									<li><a href="uploadPage.do">Upload</a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown"> Share <b class="caret"></b></a>
+										<ul class="dropdown-menu">
+											<li><a href=#> <fb:login-button
+														scope="public_profile,email,user_photos,publish_actions,read_stream,manage_pages"
+														onlogin="checkLoginState();">Facebook
+											</fb:login-button>
+											</a></li>
+											<li><a href="shareFriends.do">Share with friends</a></li>
+										</ul></li>
+									<li><a href="logout.do">Logout</a></li>
+								</ul>
+							</div>
+							<!--/.nav-collapse -->
+						</div>
+					</div>
+				</div>
+				<div class="container2">
+					<div id="morphsearch" class="morphsearch">
+						<form class="morphsearch-form"
+							style="margin-top: -13%; width: 50px; margin-left: 75%;">
+							<input class="morphsearch-input" type="search"
+								placeholder="Search" style="" />
+							<button class="morphsearch-submit" type="submit" style="margin-right: -90px;">Search</button>
+						</form>
+							<div class="morphsearch-content">
+							<div style="margin-top: -120px; margin-left: 0px; margin-bottom: 20px;"><h1 style="margin-left: -500px; margin-top: -20px;  margin-bottom: 40px;">Date</h1>
+									<table>
+										<tr align="center">
+											<td><h1>Date</h1></td>
+											<td width="auto;">&nbsp&nbsp
+											<input type="text" id="from"
+												class="span2 search-query" style="height: 30px;"> ~ <input type="text"
+												id="to" class="span2 search-query" style="height: 30px;"/><br></td>
+										</tr>
+									</table>
+								</div>
+								
+								<div class="dummy-column" style="margin-left: 0;">
+								
+								<input type="hidden" id="tagList" value="${requestScope.tagList }">
+								<input type="hidden" id="peopleList" value="${requestScope.peopleList }">	
+
+								<h1>People</h1>
+								<c:forEach items="${requestScope.photoList}" var="photo" varStatus="status">
+								<input type="text" class="form-control2" name="people" value="${photo.peopleText}" placeholder="이름을 입력하세요" style="width: 299px"/>
+								</c:forEach>
+								<a class="dummy-media-object"
+									href="http://twitter.com/SaraSoueidan"> <img class="round"
+									src="http://0.gravatar.com/avatar/81b58502541f9445253f30497e53c280?s=50&d=identicon&r=G"
+									alt="Sara Soueidan" />
+									<h3>Sara Soueidan</h3>
+								</a>
+								
+							</div>
+							<div class="dummy-column" style="margin-right: 5%;">
+								<h1>Tags</h1><input type="text" id="tagsSearch" name="tagsSearch" placeholder="태그를 입력하세요" style="width: 299px">
+								<a class="dummy-media-object"
+									href="http://tympanus.net/codrops/2014/08/05/page-preloading-effect/">
+									<img
+									src="http://1.gravatar.com/avatar/9bc7250110c667cd35c0826059b81b75?s=50&d=identicon&r=G"
+									alt="PagePreloadingEffect" />
+									<h3>Page Preloading Effect</h3>
+								</a>
+							</div>
+							<div class="dummy-column">
+								<h1>Location</h1><input type="text" id="locationSearch" name="locationSearch" placeholder="장소를 입력하세요" style="width: 299px">
+								<a class="dummy-media-object"
+									href="http://tympanus.net/codrops/2014/10/07/tooltip-styles-inspiration/">
+									<img
+									src="http://1.gravatar.com/avatar/9bc7250110c667cd35c0826059b81b75?s=50&d=identicon&r=G"
+									alt="TooltipStylesInspiration" />
+									<h3>Tooltip Styles Inspiration</h3>
+								</a>
+							</div>
+						</div>
+						<!-- /morphsearch-content -->
+						<span class="morphsearch-close"></span>
+					</div>
+					<!-- /morphsearch -->
+					<header class="codrops-header">
+						<h1>
+							<br> <br>
+						</h1>
+						<div class="codrops-links">
+							<br> <br>
+						</div>
+					</header>
+					<div class="overlay"></div>
+				</div>
+
+
+
+			</c:otherwise>
+		</c:choose>
+
+	</div>
+
+
+	<div>
+
+		<jsp:include page="${content}" />
+	</div>
+
+	<%-- 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+					type="text/javascript"></script> --%>
+	<script src="${pageContext.request.contextPath}/js/jquery-ui.js"
+		type="text/javascript"></script>
+	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+	<script src="js/my_script.js"></script>
+	<script type="text/javascript">
+		function search() {
+			alert("Location:" + $("#searchByLocation").val());
+			alert("Date:" + ($("#from").val()) + "~" + ($("#to").val()));
+			alert("People:" + $("#searchByPeole").val());
+			alert("Tags:" + $("#searchByTags").val());
+
+		}
+
+		$("#from, #to ").datepicker({
+			changeMonth : true,
+			changeYear : true,
+			yearRange : '1950:2014'
+		}).val();
+
+		/////////////////////////////   facebook   ////////////////////////////////////
+
+		function statusChangeCallback(response) {
+
+			if (response.status === 'connected') {
+				arrayYo();
+			} else if (response.status === 'not_authorized') {
+				document.getElementById('status').innerHTML = 'Please log '
+						+ 'into this app.';
+			} else {
+				document.getElementById('status').innerHTML = 'Please log '
+						+ 'into Facebook.';
+			}
+		}
+
+		function checkLoginState() {
+
+			FB.getLoginStatus(function(response) {
+				statusChangeCallback(response);
+			});
+
+		}
+
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId : '781081908626486',
+				cookie : true,
+				xfbml : true,
+				version : 'v2.1'
+			});
+
+			FB.getLoginStatus(function(response) {
+				statusChangeCallback(response);
+			});
+
+		};
+
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id))
+				return;
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		function sendPic(a) {
+
+			FB.api("/me/photos", "POST", {
+				url : a
+			}, function(response) {
+				if (response && !response.error) {
+					alert('업로드 완료');
+				} else {
+					alert('error');
+				}
+			});
+
+		}
+
+		/*   
+		  function facebookUploadIt(){
+				
+				FB.login(function(){},{scope:"public_profile,email,user_photos,publish_actions,read_stream,manage_pages"
+					});
+				
+				checkLoginState();
+			} */
+
+		////////////////////////////////////////////////////
+		function arrayYo() {
+
+			var ff = document.getElementsByName('photode');
+			var gg = document.getElementsByName('urlol');
+
+			var a = [];
+			for (i = 0; i < ff.length; i++) {
+				if (ff[i].checked) {
+					a.push(gg[i].value);
+				}
+			}
+			if (a.length != null) {
+				for (i = 0; i < a.length; i++) {
+					sendPic(a[i]);
+				}
+			}
+		}
+	</script>
+	<script src="js/classie.js"></script>
+	<script>
+		(function() {
+			var morphSearch = document.getElementById('morphsearch'), input = morphSearch
+					.querySelector('input.morphsearch-input'), ctrlClose = morphSearch
+					.querySelector('span.morphsearch-close'), isOpen = isAnimating = false,
+			// show/hide search area
+			toggleSearch = function(evt) {
+				// return if open and the input gets focused
+				if (evt.type.toLowerCase() === 'focus' && isOpen)
+					return false;
+
+				var offsets = morphsearch.getBoundingClientRect();
+				if (isOpen) {
+					classie.remove(morphSearch, 'open');
+
+					// trick to hide input text once the search overlay closes 
+					// todo: hardcoded times, should be done after transition ends
+					if (input.value !== '') {
+						setTimeout(function() {
+							classie.add(morphSearch, 'hideInput');
+							setTimeout(function() {
+								classie.remove(morphSearch, 'hideInput');
+								input.value = '';
+							}, 300);
+						}, 500);
+					}
+
+					input.blur();
+				} else {
+					classie.add(morphSearch, 'open');
+				}
+				isOpen = !isOpen;
+			};
+
+			// events
+			input.addEventListener('focus', toggleSearch);
+			ctrlClose.addEventListener('click', toggleSearch);
+			// esc key closes search overlay
+			// keyboard navigation events
+			document.addEventListener('keydown', function(ev) {
+				var keyCode = ev.keyCode || ev.which;
+				if (keyCode === 27 && isOpen) {
+					toggleSearch(ev);
+				}
+			});
+
+			/***** for demo purposes only: don't allow to submit the form *****/
+			morphSearch.querySelector('button[type="submit"]')
+					.addEventListener('click', function(ev) {
+						ev.preventDefault();
+					});
+		})();
+	</script>
+
+</body>
+</html>

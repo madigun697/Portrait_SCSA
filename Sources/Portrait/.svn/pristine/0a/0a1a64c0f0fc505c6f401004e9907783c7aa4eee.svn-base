@@ -1,0 +1,30 @@
+package org.iptime.madigun697.dao;
+
+import java.util.List;
+
+import org.iptime.madigun697.vo.Photo;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PhotoDAOImpl implements PhotoDAO {
+	
+	@Autowired
+	private SqlSessionTemplate session;
+
+	// userId를 통해 사진 삭제
+	@Override
+	public boolean deletePhoto(String userId) {
+		System.out.println(userId);
+		return session.delete("deletePhotoByUserId", userId) < 0 ? false : true;
+	}
+
+	// 사진 정보 DB에 추가
+	@Override
+	public void insertPhotos(List<Photo> photoList) {
+		int result = session.insert("syncPhoto", photoList); 
+		System.out.println(result);
+	}
+
+}

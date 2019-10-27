@@ -1,0 +1,29 @@
+package org.iptime.madigun697.dao;
+
+import java.util.HashMap;
+
+import org.iptime.madigun697.vo.GPSLog;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class GPSLogDAOImpl implements GPSLogDAO {
+	
+	@Autowired
+	private SqlSessionTemplate session;
+
+	@Override
+	public void insertLog(GPSLog gpsLog) {
+		session.insert("insertLog", gpsLog);
+	}
+
+	@Override
+	public GPSLog selectLog(String time, String userId) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("userId", userId);
+		map.put("time", time);
+		return session.selectOne("selectLog", map);
+	}
+	
+}

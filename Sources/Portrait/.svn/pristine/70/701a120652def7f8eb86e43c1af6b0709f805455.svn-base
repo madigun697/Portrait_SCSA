@@ -1,0 +1,49 @@
+package org.iptime.madigun697.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.iptime.madigun697.dao.AlbumDAO;
+import org.iptime.madigun697.vo.Album;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AlbumServiceImpl implements AlbumService {
+	
+	@Autowired
+	private AlbumDAO albumDao;
+
+	// 전체 앨범 목록 호출
+	@Override
+	public List<Album> getAlbumList(String userId) {
+		return albumDao.selectAlbumList(userId);
+	}
+
+	// 앨범명으로 앨범아이디 추출
+	@Override
+	public String searchAlbumTitle(String userId, String albumTitle) {
+		Album album = new Album();
+		album.setUserId(userId);
+		album.setAlbumTitle(albumTitle);
+		return albumDao.selectAlbumByTitle(album);
+	}
+
+	// 새로운 앨범 생성
+	@Override
+	public String createAlbum(Album album) {
+		int rand = (int) (Math.random()*100000000);
+		String albumId = album.getUserId() + "_" + rand;
+		System.out.println(albumId);
+		album.setAlbumId(albumId);
+		album.setAlbumThumnailLink("http://madigun697.iptime.org/Portrait/thumnail/portraitfavicon.png");
+		if (albumDao.insertAlbum(album)) {
+			return albumId;
+		} else {
+			return null;
+		}
+	}
+	
+}

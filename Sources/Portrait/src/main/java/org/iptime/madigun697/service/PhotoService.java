@@ -1,0 +1,52 @@
+package org.iptime.madigun697.service;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
+import org.iptime.madigun697.vo.People;
+import org.iptime.madigun697.vo.Photo;
+import org.iptime.madigun697.vo.Search;
+
+public interface PhotoService {
+
+	// picasa와 portrait의 사진 동기화
+	List<Photo> syncPhoto(List<Photo> photoList);
+	
+	// 미분류 사진 앨범정보 Update
+	List<Photo> updateUnsortPhotos(List<Photo> photoList, String userId);
+
+	// 사진 목록 불러오기
+	List<Photo> getPhotoList(Photo photo);
+
+	// 사진 삭제
+	void deletePhoto(String photoId, String userId);
+
+	// 사진 추가
+	Photo newPhoto(Photo newPhoto, String userId);
+
+	// 사진 불러오기
+	Photo getPhoto(String photoId);
+
+	// 사진 수정하기
+	void updatePhoto(Photo updatePhoto);
+	
+	// Comments에 입력된 커스텀 JSON 객체를 나누어 Photo 객체에 저장
+	Photo parseComments(Photo photo, String userId);
+
+	String getPhotoUrl(String peopleName, String userId);
+
+	List<Photo> getPeoplePhotoList(People people);
+
+	Map<String, List<Photo>> sortByGeotag(String userId, int boundary) throws Exception ;
+
+	Map<String, List<Photo>> sortByDate(String userId, int boundary);
+
+	List<Photo> getNearByPhotos(String photoId, String userId);
+
+	int countPhoto(String albumId);
+
+	List<Photo> search(Search keyWords);
+
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userInfo">
+
+	<resultMap id="userMap" type="User">
+		<id property="userId" column="USERID" />
+		<result property="userName" column="USERNAME" />
+		<result property="birthday" column="BIRTHDAY" />
+		<result property="pAlbumId" column="PALBUMID" />
+		<result property="snsAuth" column="SNSAUTH" />
+	</resultMap>
+	
+	<!-- 새로운 사용자를 DB에 추가 -->	
+	<insert id="newUser" parameterType="User">
+		INSERT INTO USERS VALUES(#{userId}, #{userName}, NULL, #{pAlbumId}, 'FALSE')
+	</insert>
+
+	<!-- 사용자 ID를 통해 피카사 앨범 ID 추출 -->
+ 	<select id="login" parameterType="String" resultType="String">
+ 		SELECT PALBUMID FROM USERS WHERE USERID = #{userId}
+ 	</select>
+ 	
+ 	<!-- 사용자 생일 추가-->
+	<update id="addBirthday" parameterType="User">
+		UPDATE USERS SET BIRTHDAY = TO_DATE(#{birthday}, 'mm/dd/yyyy') WHERE USERID = #{userId}
+	</update>
+	
+	<!-- 사용자 정보 가져오기-->
+	<select id="getUserInfo" parameterType="String" resultMap="userMap">
+		SELECT userId, userName, TO_CHAR(birthday, 'yyyy/mm/dd') birthday FROM USERS WHERE USERID= #{userId}	
+	</select>
+	
+	
+	<select id="selectUserList" resultType="String">
+		SELECT USERNAME FROM USERS
+	</select>
+
+	<select id="getUserInfoByName" parameterType="String" resultMap="userMap">
+		SELECT userId, userName, TO_CHAR(birthday, 'yyyy/mm/dd') birthday FROM USERS WHERE USERNAME = #{userName}
+	</select>
+
+
+</mapper>

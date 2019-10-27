@@ -1,0 +1,311 @@
+
+<%@ page language="java" contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+<link rel="stylesheet" type="text/css" href="css/about/normalize.css" />
+<link rel="stylesheet" type="text/css" href="css/about/demo.css" />
+<link rel="stylesheet" type="text/css" href="css/about/component.css" />
+<style type="text/css">
+@import url( http://ts.daumcdn.net/custom/blog/0/606/skin/images/nanumgothic.css);
+img{
+max-width: 100%;
+}
+
+</style>
+
+</head>
+<body class="demo-1">
+	<div id="container" class="container intro-effect-push">
+		<header class="header">
+		<div class="bg-img">
+			<img src="./images/camera.png" alt="Background Image" />
+		</div>
+		<div class="title" >
+			<h1 style="margin-bottom: 20%; text-shadow: 2px 2px 15px black;">Welcome to PORTRAIT</h1>
+		</div>
+		</header>
+		<button class="trigger" data-info="Click here to learn about 'Portrait'">
+			<span>Trigger</span>
+		</button>
+		<div class="title" >
+			<p class="subline" style="font-family: 'nanum gothic'; letter-spacing: -2px; color: #F96E5B;">디지털 세상 안에서 당신의 따뜻한 추억을 되살려 줄</p>
+			<p style="color: gray;">
+			<h1 style="color: gray;">Portrait</h1>
+			
+				<a style="color: gray;">by <strong>CJM, HDH, KMK, SYA, YJH</strong>   
+				<strong>Dec 17, 2014</strong></a>
+			</p>
+		</div>
+		<article class="content">
+		<div style="font-family: 'nanum gothic'">
+		<img src="./images/Portrait01.png">
+		<br><br>
+			<p>We may define a food to be any substance which will repair the
+				functional waste of the body, increase its growth, or maintain the
+				heat, muscular, and nervous energy.</p>
+			<p>In its most comprehensive sense, the oxygen of the air is a
+				food; as although it is admitted by the lungs, it passes into the
+				blood, and there re-acts upon the other food which has passed
+				through the stomach. It is usual, however, to restrict the term food
+				to such nutriment as enters the body by the intestinal canal. Water
+				is often spoken of as being distinct from food, but for this there
+				is no sufficient reason.</p>
+
+			<h3>Flesh-formers, heat-givers, and bone-formers</h3>
+			<p>Mineral matter is quite as necessary for plant as for animal
+				life, and is therefore present in all food, except in the case of
+				some highly-prepared ones, such as sugar, starch and oil. Children
+				require a good proportion of calcium phosphate for the growth of
+				their bones, whilst adults require less. The outer part of the grain
+				of cereals is the richest in mineral constituents, white flour and
+				rice are deficient. Wheatmeal and oatmeal are especially recommended
+				for the quantity of phosphates and other salts contained in them.
+				Mineral matter is necessary not only for the bones but for every
+				tissue of the body.</p>
+
+			<h3>Soaking in cold water</h3>
+			<p>The loss on soaking in cold water, unless the water is
+				preserved, is seen to be considerable. The split lentils, having had
+				the protecting skin removed, lose most. In every case the ash
+				contained a good deal of phosphate and lime. Potatoes are rich in
+				important potash salts; by boiling a large quantity is lost, by
+				steaming less and by baking in the skins, scarcely any. The flavour
+				is also much better after baking.</p>
+			
+			<p>Organic Compounds are formed by living organisms (a few can
+				also be produced by chemical means). They are entirely decomposed by
+				combustion.</p>
+			<h3>Carbon compounds or heat-producers</h3>
+			<p>The Non-Nitrogenous Organic Compounds are commonly called
+				carbon compounds or heat-producers, but these terms are also
+				descriptive of the nitrogenous compounds. These contain carbon,
+				hydrogen and oxygen only, and furnish by their oxidation or
+				combustion in the body the necessary heat, muscular and nervous
+				energy. The final product of their combustion is water and carbon
+				dioxide (carbonic acid gas).</p>
+			
+			<h3>From acid and rancidity</h3>
+			<p>The most esteemed and dearest oil is Almond. What is called
+				Peach-kernel oil (Oleum Amygdalæ Persicæ), but which in commerce
+				includes the oil obtained from plum and apricot stones, is almost as
+				tasteless and useful, whilst it is considerably cheaper. </p>
+			<p>The solid fats sold as butter and lard substitutes, consist of
+				deodorised cocoanut oil, and they are excellent for cooking
+				purposes. It is claimed that biscuits, &amp;c., made from them may
+				be kept for a much longer period, without showing any trace of
+				rancidity, than if butter or lard had been used. They are also to be
+				had agreeably flavoured by admixture with almond, walnut, &amp;c.,
+				"cream."</p>
+
+			<p>Vegetable Acids are composed of the same three elements and
+				undergo combustion into the same compounds as the carbohydrates.
+				They rouse the appetite, stimulate digestion, and finally form
+				carbonates in combination with the alkalies, thus increasing the
+				alkalinity of the blood. The chief vegetable acids are: malic acid,
+				in the apple, pear, cherry, &amp;c.; citric acid, in the lemon,
+				lime, orange, gooseberry, cranberry, strawberry, raspberry, &amp;c.;
+				tartaric acid, in the grape, pineapple, &amp;c.</p>
+
+			<p>Some place these under Class III. or food adjuncts. Oxalic
+				acid (except when in the insoluble state of calcium oxalate), and
+				several other acids are poisonous.</p>
+
+			<h3>The essential part of every living cell</h3>
+			<p>Proteids or Albuminoids are frequently termed flesh-formers.
+				They are composed of nitrogen, carbon, hydrogen, oxygen, and a small
+				quantity of sulphur, and are extremely complex bodies. </p>
+
+			<p>Proteids are excreted from the body as water, carbon dioxide,
+				urea, uric acid, sulphates, &amp;c.</p>
+
+			The principal proteids of animal origin have their corresponding
+			proteids in the vegetable kingdom. Some kinds, whether of animal or
+			vegetable origin, are more easily digested than others. They have the
+			same physiological value from whichever kingdom they are derived.
+			</p>
+
+			<p>The Osseids comprise ossein, gelatin, cartilage, &amp;c., from
+				bone, skin, and connective issue. </p>
+
+			<p>The Vegetable Kingdom is the prime source of all organic food;
+				water, and to a slight extent salts, form the only food that animals
+				can derive directly from the inorganic kingdom. When man consumes
+				animal food—a sheep for example—he is only consuming a portion of
+				the food which that sheep obtained from grass, clover, turnips,
+				&amp;c. All the proteids of the flesh once existed as proteids in
+				the vegetables; some in exactly the same chemical form.</p>
+
+			<blockquote>A comparatively small quantity of proteid
+				matter, such as is easily obtained from vegetable food, is ample for
+				the general needs of the body.</blockquote>
+			<p>Flesh contains no starch or sugar, but a small quantity of
+				glycogen. The fat in an animal is derived from the carbohydrates,
+				the fats and the proteids of the vegetables consumed. </p>
+
+			<p>
+				<strong>Excerpt from: <a
+					href="http://www.gutenberg.org/ebooks/15237">The Chemistry of
+						Food and Nutrition</a> by A. W. Duncan
+				</strong>
+			</p>
+		</div>
+		</article>
+		<section class="related">
+		<p style="color: gray;">If you want to use our service</p>
+		<div>
+			<a href="./index.do" data-transition="fade"><h4>
+					Go to Portrait</h4>
+					<img src="./images/logo.png" style="width: 30%"></a>
+		</div>
+		</section>
+	</div>
+	<!-- /container -->
+	<script src="js/about/classie.js"></script>
+	<script>
+		(function() {
+
+			// detect if IE : from http://stackoverflow.com/a/16657946		
+			var ie = (function() {
+				var undef, rv = -1; // Return value assumes failure.
+				var ua = window.navigator.userAgent;
+				var msie = ua.indexOf('MSIE ');
+				var trident = ua.indexOf('Trident/');
+
+				if (msie > 0) {
+					// IE 10 or older => return version number
+					rv = parseInt(
+							ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+				} else if (trident > 0) {
+					// IE 11 (or newer) => return version number
+					var rvNum = ua.indexOf('rv:');
+					rv = parseInt(ua.substring(rvNum + 3, ua
+							.indexOf('.', rvNum)), 10);
+				}
+
+				return ((rv > -1) ? rv : undef);
+			}());
+
+			// disable/enable scroll (mousewheel and keys) from http://stackoverflow.com/a/4770179					
+			// left: 37, up: 38, right: 39, down: 40,
+			// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+			var keys = [ 32, 37, 38, 39, 40 ], wheelIter = 0;
+
+			function preventDefault(e) {
+				e = e || window.event;
+				if (e.preventDefault)
+					e.preventDefault();
+				e.returnValue = false;
+			}
+
+			function keydown(e) {
+				for (var i = keys.length; i--;) {
+					if (e.keyCode === keys[i]) {
+						preventDefault(e);
+						return;
+					}
+				}
+			}
+
+			function touchmove(e) {
+				preventDefault(e);
+			}
+
+			function wheel(e) {
+				// for IE 
+				//if( ie ) {
+				//preventDefault(e);
+				//}
+			}
+
+			function disable_scroll() {
+				window.onmousewheel = document.onmousewheel = wheel;
+				document.onkeydown = keydown;
+				document.body.ontouchmove = touchmove;
+			}
+
+			function enable_scroll() {
+				window.onmousewheel = document.onmousewheel = document.onkeydown = document.body.ontouchmove = null;
+			}
+
+			var docElem = window.document.documentElement, scrollVal, isRevealed, noscroll, isAnimating, container = document
+					.getElementById('container'), trigger = container
+					.querySelector('button.trigger');
+
+			function scrollY() {
+				return window.pageYOffset || docElem.scrollTop;
+			}
+
+			function scrollPage() {
+				scrollVal = scrollY();
+
+				if (noscroll && !ie) {
+					if (scrollVal < 0)
+						return false;
+					// keep it that way
+					window.scrollTo(0, 0);
+				}
+
+				if (classie.has(container, 'notrans')) {
+					classie.remove(container, 'notrans');
+					return false;
+				}
+
+				if (isAnimating) {
+					return false;
+				}
+
+				if (scrollVal <= 0 && isRevealed) {
+					toggle(0);
+				} else if (scrollVal > 0 && !isRevealed) {
+					toggle(1);
+				}
+			}
+
+			function toggle(reveal) {
+				isAnimating = true;
+
+				if (reveal) {
+					classie.add(container, 'modify');
+				} else {
+					noscroll = true;
+					disable_scroll();
+					classie.remove(container, 'modify');
+				}
+
+				// simulating the end of the transition:
+				setTimeout(function() {
+					isRevealed = !isRevealed;
+					isAnimating = false;
+					if (reveal) {
+						noscroll = false;
+						enable_scroll();
+					}
+				}, 1200);
+			}
+
+			// refreshing the page...
+			var pageScroll = scrollY();
+			noscroll = pageScroll === 0;
+
+			disable_scroll();
+
+			if (pageScroll) {
+				isRevealed = true;
+				classie.add(container, 'notrans');
+				classie.add(container, 'modify');
+			}
+
+			window.addEventListener('scroll', scrollPage);
+			trigger.addEventListener('click', function() {
+				toggle('reveal');
+			});
+		})();
+	</script>
+</body>
+</html>

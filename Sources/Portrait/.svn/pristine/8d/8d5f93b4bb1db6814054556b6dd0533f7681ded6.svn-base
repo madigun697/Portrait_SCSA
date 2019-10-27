@@ -1,0 +1,43 @@
+package org.iptime.madigun697.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.iptime.madigun697.vo.People;
+import org.iptime.madigun697.vo.User;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PeopleDAOImpl implements PeopleDAO {
+	
+	@Autowired
+	private SqlSessionTemplate session;
+
+	@Override
+	public void deletePeople(People people) {
+		session.delete("deletePeople", people);
+	}
+
+	@Override
+	public void insertPeople(People people) {
+		session.insert("insertPeople", people);
+	}
+
+	@Override
+	public List<People> selectPeople(People people) {
+		return session.selectList("selectPeople", people);
+	}
+
+	@Override
+	public List<Map> selectPeopleCnt(String userId) {
+		return session.selectList("selectPeopleCount", userId);
+	}
+
+	@Override
+	public List<Integer> selectCntList(String userId) {
+		return session.selectList("selectCount", userId);
+	}
+	
+}

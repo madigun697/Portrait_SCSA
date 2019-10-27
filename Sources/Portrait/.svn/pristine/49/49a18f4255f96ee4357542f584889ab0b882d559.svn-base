@@ -1,0 +1,19 @@
+package org.iptime.madigun697.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.iptime.madigun697.vo.Album;
+
+public interface AlbumService {
+
+	// 전체 앨범 목록 호출
+	List<Album> getAlbumList(String userId);
+
+	// 앨범명으로 앨범아이디 추출
+	String searchAlbumTitle(String userId, String albumTitle);
+
+	// 새로운 앨범 생성
+	String createAlbum(Album album);
+
+}

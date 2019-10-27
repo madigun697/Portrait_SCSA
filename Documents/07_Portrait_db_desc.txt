@@ -1,0 +1,70 @@
+TABLE ADDPEOPLE
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ PHOTOID                                   NOT NULL VARCHAR2(30)                
+ PEOPLENAME                                NOT NULL VARCHAR2(30)                
+ USERID                                             VARCHAR2(30)                
+TABLE EVENT
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ EVENTID                                   NOT NULL VARCHAR2(100)               
+ EVENTNAME                                 NOT NULL VARCHAR2(100)               
+ EVENTDATE                                 NOT NULL DATE                        
+ USERID                                    NOT NULL VARCHAR2(30)                
+ EVENTDESC                                          VARCHAR2(1000)              
+TABLE PUBLISH
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ PUBLISHID                                 NOT NULL VARCHAR2(30)                
+ RECEIVEUSERID                             NOT NULL VARCHAR2(30)                
+ PUBLISHEUSERID                            NOT NULL VARCHAR2(30)                
+ PUBLISHALBUMID                            NOT NULL VARCHAR2(30)                
+ PUBLISHALBUMTITLE                         NOT NULL VARCHAR2(30)                
+ PUBLISHDATE                               NOT NULL DATE                        
+ PHOTOPATH                                 NOT NULL VARCHAR2(100)               
+ RECEIVED                                  NOT NULL VARCHAR2(100)               
+TABLE USERS
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ USERID                                    NOT NULL VARCHAR2(30)                
+ USERNAME                                  NOT NULL VARCHAR2(20)                
+ BIRTHDAY                                           DATE                        
+ PALBUMID                                  NOT NULL VARCHAR2(30)                
+ SNSAUTH                                   NOT NULL VARCHAR2(100)               
+TABLE ALBUM
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ ALBUMID                                   NOT NULL VARCHAR2(30)                
+ USERID                                    NOT NULL VARCHAR2(30)                
+ ALBUMTITLE                                NOT NULL VARCHAR2(30)                
+ ALBUMTHUMNAILLINK                                  VARCHAR2(100)               
+ TYPE                                      NOT NULL VARCHAR2(100)               
+TABLE TAG
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ TAGID                                     NOT NULL VARCHAR2(100)               
+ TAGNAME                                   NOT NULL VARCHAR2(100)               
+TABLE PHOTO
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ PHOTOID                                   NOT NULL VARCHAR2(30)                
+ ALBUMID                                   NOT NULL VARCHAR2(30)                
+ PHOTOTITLE                                NOT NULL VARCHAR2(100)               
+ PHOTOURL                                  NOT NULL VARCHAR2(500)               
+ FSTOP                                              VARCHAR2(10)                
+ MAKE                                               VARCHAR2(20)                
+ MODEL                                              VARCHAR2(20)                
+ EXPOSURE                                           VARCHAR2(20)                
+ ISO                                                VARCHAR2(10)                
+ TIME                                               VARCHAR2(30)                
+ DESCRIPTION                                        VARCHAR2(400)               
+ GEOTAG                                             VARCHAR2(100)               
+ EVENTID                                            VARCHAR2(100)               
+ USERID                                    NOT NULL VARCHAR2(30)                
+ PHOTOVER                                           NUMBER                      
+TABLE ADDTAG
+ Name                                      Null?    Type                        
+ ----------------------------------------- -------- ----------------------------
+ TAGID                                     NOT NULL VARCHAR2(100)               
+ PHOTOID                                   NOT NULL VARCHAR2(30)                
+ USERID                                    NOT NULL VARCHAR2(30)                

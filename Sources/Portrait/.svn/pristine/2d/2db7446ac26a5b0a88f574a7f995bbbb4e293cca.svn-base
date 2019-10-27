@@ -1,0 +1,540 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@page import="org.iptime.madigun697.util.AuthHelper"%>
+<!DOCTYPE html>
+<html>
+<head>
+
+<style type="text/css">
+body {
+	font-family: '맑은 고딕';
+}
+
+a.no-uline {
+	text-decoration: none
+}
+
+.itxOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: -900;
+	background-color: rgb(60, 60, 60);
+	width: 100%
+}
+
+.modalPortrait {
+	position: fixed;
+	_position: absolute;
+	z-index: 1000;
+	padding: 23px 22px;
+	_width: 1%;
+	-moz-box-shadow: 2px 3px 20px 1px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 2px 3px 20px 1px rgba(0, 0, 0, 0.5);
+	box-shadow: 2px 3px 20px 1px rgba(0, 0, 0, 0.5);
+	padding: 0
+}
+
+.modalContent {
+	position: relative;
+	padding: 20px;
+	background-color: rgba(235, 237, 255, 1);
+	z-index: 1002;
+	opacity: 0;
+	font-color:white;
+}
+
+.modalClose {
+	position: absolute;
+	top: 0px;
+	right: 10px;
+	z-index: 100000
+}
+
+.modalClose a {
+	display: block;
+	overflow: hidden;
+	width: 34px;
+	
+	padding-top: 34px;
+	/* background-image: url(../img/button_close_2.png); */
+	outline: 0
+}
+
+.modalClose a:hover {
+	background-position: left 68px
+}
+
+.modalClose a:active {
+	background-position: left 34px
+}
+
+.modalTitle {
+	white-space: nowrap;
+	background-color: #FFFFFF;
+	background: url(../img/dotted_line.png) repeat-x left bottom;
+	margin-bottom: 0;
+	position: fixed;
+	width: 100%;
+	max-width: 650px;
+}
+
+.modalTitle h2 {
+	font-size: 20px;
+	padding-bottom: 10px
+}
+
+.modalInfo {
+	margin-top: 70px;
+	font-size: 12px;
+	overflow-Y: auto;
+	overflow-X: hidden;
+	font-color:white;
+}
+
+
+body {
+	font-family: "nanumgothic";
+	font-size: 9pt;
+	scrollbar-face-color: #CCCCCC;
+	scrollbar-shadow-color: #000000;
+	border: 1px;
+	border-color: #151515;
+	scrollbar-highlight-color: #ffffff;
+	scrollbar-3dlight-color: #000000;
+	scrollbar-darkshadow-color: #777777;
+	scrollbar-track-color: #999999;
+	scrollbar-arrow-color: #151515;
+}
+
+.modalPanel {
+	width: 650px;
+	font-color:white;
+}
+
+.infoSubtitle {
+	font-size: 12px;
+	background: url(../img/dotted_line.png) repeat-x left bottom;
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+	font-color:white;
+}
+
+
+
+.lastUnit {
+	display: table-cell;
+	width: auto;
+	*display: block;
+	*zoom: 1;
+	_left: -3px
+}
+
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+</style>
+
+<script type="text/javascript">
+window.onload = window.onresize = resize; 
+
+/**
+ * 전체 화면의 크기(window.innerHeight) 변화를 감지하여,
+ * modal팝업으로 표시되는 div의 크기를 자동으로 조절하는 기능
+ */
+function resize() {
+	var container = document.getElementById("modalC");
+	var info = document.getElementById("modalI");
+	var panel = document.getElementById("modalP");
+	var _panelH = panel.style.height;
+	var panelH = _panelH.substring(0,_panelH.length-2);
+	panelH = Number(panelH);
+	var height = window.innerHeight;
+	if (panelH > (height-300)) {
+		container.style.height = height - 230 + "px";
+		info.style.height = height - 300 + "px";
+	} else {
+		container.style.height = panelH + 70 + "px";
+		info.style.height = panelH + "px";
+	}
+}
+</script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<script src="./js/modalpopup.js"></script>
+<script src="./js/modalSize.js"></script>
+
+<!-- 구글 폰트 불러오기 -->
+<link href='http://fonts.googleapis.com/css?family=Kelly+Slab'
+	rel='stylesheet' type='text/css'>
+<!-- 부트스트랩, style, grid CSS 불러오기 -->
+<link href="./css/bootstrap.css" rel="stylesheet">
+<link href="./css/style.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="./css/grid.css" />
+<link rel="stylesheet" href="./css/jquery-ui.css">
+
+
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+
+<style type="text/css">
+html, body {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	font-family: '맑은 고딕';
+}
+
+<%--input.img_button1 {
+        background: url(./images/shareButton.JPG) no-repeat;
+        border: none;
+        height: 30px;
+        cursor: pointer;
+        margin-left: 20px;
+      }--%>
+ 
+</style>
+
+<c:if test="${requestScope.content != 'peopleView.jsp'}">
+	<script src="//code.jquery.com/jquery-1.11.0.js"></script>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+</c:if>
+
+
+<%-- <c:if test="${requestScope.content == 'photoList.jsp' }">
+	<link href="./dist/css/tokenfield-typeahead.css" type="text/css" rel="stylesheet">
+
+    <link href="./dist/css/bootstrap-tokenfield.css" type="text/css" rel="stylesheet">
+    <link href="./docs-assets/css/pygments-manni.css" type="text/css" rel="stylesheet">
+    <link href="./docs-assets/css/docs.css" type="text/css" rel="stylesheet">
+    
+    <script type="text/javascript" src="./dist/bootstrap-tokenfield.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="./docs-assets/js/scrollspy.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="./docs-assets/js/affix.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="./docs-assets/js/typeahead.bundle.min.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="./docs-assets/js/docs.js" charset="UTF-8"></script>
+</c:if> --%>
+</head>
+<body>
+	<div>
+
+		<c:choose>
+			<c:when test="${empty albumList}">
+
+
+				<div id="navbar" class="navbar navbar-static-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<a class="btn btn-navbar" data-toggle="collapse"
+								data-target=".nav-collapse"> <span class="icon-bar"></span>
+								<span class="icon-bar"></span> <span class="icon-bar"></span>
+							</a> <a class="brand" href="index.do">Portrait<span>memories</span>
+							</a>
+							<div class="nav-collapse collapse pull-right" style="font-family: 'SourceSansProRegular'">
+								<ul class="nav">
+									<li><a href="about.do">About</a></li>
+									<li><a href="#Servies">Servies</a></li>
+									<li class="" style="color: red;">
+										<%
+											final AuthHelper helper = new AuthHelper();
+										out.println("<a href='" + helper.buildLoginUrl() + "&access_type=offline"
+												+ "'>LOGIN</a>");
+													session.setAttribute("state", helper.getStateToken());
+										%>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</c:when>
+			<c:otherwise>
+
+				<div id="navbar" class="navbar navbar-static-top">
+					<div class="navbar-inner">
+						<div class="container">
+							<a class="btn btn-navbar" data-toggle="collapse"
+								data-target=".nav-collapse"> <span class="icon-bar"></span>
+								<span class="icon-bar"></span> <span class="icon-bar"></span>
+							</a><a class="brand" href="home.do">Portrait<span>memories</span>
+							</a>
+							<div class="nav-collapse collapse pull-right" style="font-family: 'SourceSansProRegular'">
+								<ul class="nav">
+									<%--<c:if test="${not empty sessionScope.alertList}">
+										<li><a href="" data-target="#id" type="button"  data-toggle="modal">
+											<input type="button" value="알림!!!" onclick="checkAlram()"></a>
+										</li>
+									</c:if>
+									 --%>
+									
+									<c:if test="${not empty sessionScope.alertList}">
+										<li>
+										<a href="javascript:showhide('signpage', 'itxOverlay')">
+										<span class="icn_new"><font style="color: rgb(255, 155, 0)">New!!</font></span>	
+										</a> 
+										</li>
+									</c:if>
+								
+									<li><a href="home.do">Home</a></li>
+									<li><a href="hello.do">Album</a></li>
+									<li><a href="timeLinePage.do">TimeLine</a></li>
+									<li><a href="peopleView.do">People</a></li>
+									<li><a href="locationView.do">Location</a></li>
+									<li><a href="uploadPage.do">Upload</a></li>
+									<li class="dropdown"><a href="#" class="dropdown-toggle"
+										data-toggle="dropdown"> Share <b class="caret"></b></a>
+										<ul class="dropdown-menu" style="width: 250px; height: 180px;">
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Send to Facebook:
+											<li><a href=# style="height: 30px;"><fb:login-button
+														scope="public_profile,email,user_photos,publish_actions,read_stream,manage_pages"
+														onlogin="checkLoginState();">Facebook
+											</fb:login-button>
+											</a></li>
+											<li>
+											
+										<hr>
+											<form class="form_shareFriends" id="form_shareFriends" name="form_shareFriends" 
+												method="post" action="albumView.do" >
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Share with Friends
+											<input type="text" class="form-control2" width="15px" 
+											 style="width: 100px; margin-left: 20px; float: left;" name="receivedUserName" id="receivedUserName"
+										value="${photo.peopleText }" placeholder="insert Name"/>
+											<div style="float: left;"><input type="button" class="shareFBut" onclick="shareFriends()" value="send" style=" margin-bottom: 10px;">
+											</div>
+											</form>
+											</li>
+										</ul></li>
+									<li><a href="searchView.do">Search</a></li>
+									<li><a href="logout.do">Logout</a></li>
+								</ul>
+							</div>
+							<!--/.nav-collapse -->
+						</div>
+					</div>
+				</div>
+			</c:otherwise>
+		</c:choose>
+
+	</div>
+
+
+	<div>
+		<jsp:include page="${content}" />
+	</div>
+
+	<%-- 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+					type="text/javascript"></script> --%>
+					
+	<script src="js/my_script.js"></script> 
+	<script src="${pageContext.request.contextPath}/js/jquery-ui.js"
+		type="text/javascript"></script>
+	<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		/* function search() {
+			alert("Location:" + $("#searchByLocation").val());
+			alert("Date:" + ($("#from").val()) + "~" + ($("#to").val()));
+			alert("People:" + $("#searchByPeole").val());
+			alert("Tags:" + $("#searchByTags").val());
+
+		}*/
+
+		
+		var icn_blink = setInterval(function(){
+			$('span.icn_new').fadeOut('slow').fadeIn('slow');
+		}, 1000);
+		
+		
+		
+		$("#from, #to ").datepicker({
+			changeMonth : true,
+			changeYear : true,
+			yearRange : '1950:2014'
+		}).val(); 
+
+		/////////////////////////////   facebook   ////////////////////////////////////
+
+		function statusChangeCallback(response) {
+
+			if (response.status === 'connected') {
+				arrayYo();
+			} else if (response.status === 'not_authorized') {
+				document.getElementById('status').innerHTML = 'Please log '
+						+ 'into this app.';
+			} else {
+				document.getElementById('status').innerHTML = 'Please log '
+						+ 'into Facebook.';
+			}
+		}
+
+		function checkLoginState() {
+
+			FB.getLoginStatus(function(response) {
+				statusChangeCallback(response);
+			});
+
+		}
+
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId : '781081908626486',
+				cookie : true,
+				xfbml : true,
+				version : 'v2.1'
+			});
+
+			FB.getLoginStatus(function(response) {
+				statusChangeCallback(response);
+			});
+
+		};
+
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id))
+				return;
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		function sendPic(a) {
+
+			FB.api("/me/photos", "POST", {
+				url : a
+			}, function(response) {
+				if (response && !response.error) {
+					alert('업로드 완료');
+				} else {
+					alert('error');
+				}
+			});
+
+		}
+
+		/*   
+		  function facebookUploadIt(){
+				
+				FB.login(function(){},{scope:"public_profile,email,user_photos,publish_actions,read_stream,manage_pages"
+					});
+				
+				checkLoginState();
+			} */
+
+		////////////////////////////////////////////////////
+		function arrayYo() {
+
+			var ff = document.getElementsByName('photode');
+			var gg = document.getElementsByName('urlol');
+
+			var a = [];
+			for (i = 0; i < ff.length; i++) {
+				if (ff[i].checked) {
+					a.push(gg[i].value);
+				}
+			}
+			if (a.length != null) {
+				for (i = 0; i < a.length; i++) {
+					sendPic(a[i]);
+				}
+			}
+		}
+
+
+		function shareFriends(){
+			
+			var chkFirList3 = document.getElementsByName('photode');
+			var arrFir3 = new Array();
+		
+			
+			for (i = 0; i < chkFirList3.length; i++) {
+				if (chkFirList3[i].checked) {
+					arrFir3.push(chkFirList3[i].value);
+				}
+			};
+			
+			/* var receivedUserName = document.getElementById('receivedUserName'); */
+			
+			
+			
+			if((arrFir3.length)==0){
+				
+				alert("사진을 선택해주세요.");
+				 document.form_shareFriends.action="albumView.do?albumId=${sessionScope.userId}_all"
+				$(".form_shareFriends").submit();
+				
+				
+			}
+			/*  else if(receivedUserName.val()==null||receivedUserName.val().trim().length()==0){
+
+				alert("수신자명을 선택해주세요.");
+				 document.form_shareFriends.action="albumView.do?albumId=${sessionScope.userId}_all"
+				$(".form_shareFriends").submit();
+				
+			}  */
+			else{
+			
+			document.form_shareFriends.action="shareFriends.do?arrFir3=" + arrFir3;
+			$(".form_shareFriends").submit();
+			}			
+		}
+		
+	</script>
+
+				<div style="margin:auto; width :50%">
+<div id="signpage" class="modalPortrait" 
+	style="visibility: hidden; zoom: 1; margin:auto; width:50%; opacity: 0; top: 50px; border-radius:20px; z-index: -1000;">
+	
+	<div class="modalClose">
+		<a href="javascript:close()" title="창문 닫기">X</a>
+	</div>
+
+	<div class="modalContent" id="modalC" style="margin:auto; opacity:60;border-radius:20px; ">
+		<div class="modalTitle">
+			<h2 id="signinTitle"><font face="nanum gothic">앨범이 도착했습니다!</font></h2>
+		</div>
+		<div class="modalInfo" id="modalI">
+			<div id="modalP" class="modalPanel" style="height: 100px;">
+				 <div id="signinPage">
+					
+						<c:forEach var="alertList" items="${sessionScope.alertList}">
+							<form class="publishForm" id="publishForm" name="publishForm" method="post">
+								<font color="white">
+									<h3><a name="publishAlbumTitle"><font color="gray" face="nanum gothic">${alertList.publishAlbumTitle}</font></a>
+									<input type="hidden" name="publishAlbumId" value="${alertList.publishAlbumId}">
+									<input type="button" class="btn" id="acceptBut" name="acceptBut" value="accept" onclick="acceptPublish()">
+									<input type="button" class="btn" id="denyBut" name="denyBut" value="deny" onclick="denyPublish()"></h3>
+									<br>
+								</font>
+							</form>
+						</c:forEach>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<div id="itxOverlay" class="itxOverlay"
+	style="visibility: hidden; zoom: 1; opacity: 0; height: 100vh; z-index: -900; display: none;">
+	</div>
+<script type="text/javascript">
+	function acceptPublish(){
+		alert("내 앨범에 해당 앨범을 추가합니다.");
+		$('.publishForm').attr("action","acceptPublish.do")  
+		$(".publishForm").submit();
+		
+	}
+	function denyPublish(){
+		alert("앨범 공유를 거절합니다");
+		$('.publishForm').attr("action","denyPublish.do")  
+		$(".publishForm").submit();
+		
+		
+	}
+
+</script>
+
+</body>
+</html>

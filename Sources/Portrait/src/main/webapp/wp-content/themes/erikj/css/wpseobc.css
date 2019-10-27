@@ -1,0 +1,65 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* WordPress SEO breadcrumbs function */
+
+#breadcrumbs-outer {
+	float: left;
+	clear: both;
+	width: 100%;
+	padding-left: 23px;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-left.png') no-repeat left center;
+}
+#breadcrumbs-inner {
+	float: left;
+	padding-right: 23px;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-right.png') no-repeat right center;
+	margin-left: -23px;
+	overflow: hidden;
+	position: relative;
+}
+#breadcrumbs ul {
+	float: left;
+	list-style-type: none;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-grey.png') repeat-x center center;
+	overflow: hidden;
+	margin-left: 2px;
+}
+#breadcrumbs ul li {
+	float: left;
+	padding-left: 46px;
+	padding-right: 23px;
+	overflow: hidden;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-seperator.png') no-repeat left center;
+}
+#breadcrumbs ul li em {
+	font-style: normal;
+	margin-left: -23px;
+}
+#breadcrumbs ul li span {
+	float: left;
+	line-height: 41px;
+	margin-right: -23px;
+	padding-right: 23px;
+	white-space: nowrap;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-grey.png') repeat-x center center;
+}
+#breadcrumbs ul li span strong {
+	display: block;
+	line-height: 41px;
+	padding-right: 23px;
+	margin-right: -23px;
+	color: white;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-green.png') repeat-x left center;
+	font-weight: normal;
+	margin-left: -46px;
+	padding-left: 46px;
+}
+#breadcrumbs #ugly-first-seperator-patch {
+	position: absolute;
+	top: 0;
+	left: 2px;
+	width: 23px;
+	height: 41px;
+	background: transparent url('../images/generic/breadcrumbs/breadcrumb-bkg-grey.png') repeat-x center center;
+}

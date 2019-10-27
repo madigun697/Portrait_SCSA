@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="albumInfo">
+
+	<resultMap id="tagMap" type="Tag">
+		<id property="tagId" column="TAGID" />
+		<result property="tagName" column="TAGNAME" />
+	</resultMap>
+
+	<!-- 새로운 태그 추가 -->
+	<insert id="insertTag" parameterType="Tag">
+		INSERT INTO TAG VALUES (#{tagId}, #{tagName})
+	</insert>
+	
+	<!-- 사진에 태그 추가 -->
+	<insert id="insertTagInPhoto" parameterType="Tag">
+		INSERT INTO ADDTAG VALUES (#{tagId}, #{photoId}, #{userId})
+	</insert>
+	
+	<!-- 사진에 태그 삭제 -->
+	<delete id="deleteTagInPhoto" parameterType="Tag">
+		DELETE FROM ADDTAG WHERE PHOTOID = #{photoId} AND USERID = #{userId}
+	</delete>
+	
+ 	<!-- 태그명을 통해 태그 아이디 검색 -->
+ 	<select id="selectByName" parameterType="String" resultType="String">
+ 		SELECT TAGID FROM TAG WHERE TAGNAME = #{tagName}
+ 	</select>
+ 	
+ 	<select id="selectTags" parameterType="Tag" resultType="Tag">
+ 		SELECT * FROM TAG T, ADDTAG A
+ 		WHERE T.TAGID = A.TAGID
+ 		AND A.USERID = #{userId}
+ 		AND A.PHOTOID = #{photoId}
+ 	</select>
+
+	<select id="selectAllTag" parameterType="String" resultType="Tag">
+		SELECT DISTINCT T.TAGNAME
+		FROM TAG T, ADDTAG A
+		WHERE T.TAGID = A.TAGID
+		AND A.USERID = #{userId}
+	</select>
+
+</mapper>

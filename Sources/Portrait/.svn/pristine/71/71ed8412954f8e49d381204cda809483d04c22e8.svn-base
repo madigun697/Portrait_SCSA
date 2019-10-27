@@ -1,0 +1,48 @@
+package org.iptime.madigun697.service;
+
+import java.util.List;
+
+import org.iptime.madigun697.dao.PhotoDAO;
+import org.iptime.madigun697.vo.Photo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PhotoServiceImpl implements PhotoService {
+	
+	@Autowired 
+	private PhotoDAO photoDao;
+
+	// picasa와 portrait의 사진 동기화
+	@Override
+	public void syncPhoto(List<Photo> photoList) {
+		// userId 추출
+		String userId = photoList.get(0).getUserId();
+		
+		// 기존 사진 데이터 삭제
+		boolean flag = false; 
+		do {
+			flag = photoDao.deletePhoto(userId);
+		}
+		while (!flag);
+		
+		// 추가 미분류 앨범 확인
+		photoList = updateUnsortPhotos(photoList, userId);
+		
+		// 새로운 사진 데이터로 업데이트
+		photoDao.insertPhotos(photoList);
+	}
+
+	/*
+	 * 미분류 사진 앨범정보 Update
+	 */
+	private List<Photo> updateUnsortPhotos(List<Photo> photoList, String userId) {
+		for (Photo photo : photoList) {
+			if (photo.getAlbumId() == null || photo.getAlbumId().trim().length() == 0) {
+				photo.setAlbumId(userId + "_unsort");
+			}
+		}
+		return photoList;
+	}
+
+}

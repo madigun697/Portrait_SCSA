@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="albumInfo">
+
+	<resultMap id="peopleMap" type="People">
+		<id property="photoId" column="PHOTOID" />
+		<result property="peopleName" column="PEOPLENAME" />
+		<result property="userId" column="USERID" />
+	</resultMap>
+	
+	<!-- 사진에 새로운 인물태그 추가 -->
+	<insert id="insertPeople" parameterType="People">
+		INSERT INTO ADDPEOPLE VALUES (#{photoId}, #{peopleName}, #{userId})
+	</insert>
+	
+	<!-- 사진에서 기존 인물 태그 전부 삭제 -->
+	<delete id="deletePeople" parameterType="People">
+		DELETE FROM ADDPEOPLE WHERE PHOTOID = #{photoId} AND USERID = #{userId}
+	</delete>
+	
+	<!-- 사진에 등록된 인물 태그 검색 -->
+	<select id="selectPeople" parameterType="People" resultType="People">
+		SELECT * FROM ADDPEOPLE WHERE PHOTOID = #{photoId} AND USERID = #{userId}
+	</select>
+	
+	<!-- 전체 사진에서 태그된 인물 Counting -->
+	<select id="selectPeopleCount" parameterType="String" resultType="hashmap">
+		SELECT PEOPLENAME, COUNT(*) CNT 
+		FROM ADDPEOPLE 
+		WHERE USERID = #{userId} 
+		GROUP BY PEOPLENAME
+	</select>
+	
+	<!-- 인물 별 사진 갯수 추출 -->
+	<select id="selectCount" parameterType="String" resultType="Integer">
+		SELECT DISTINCT COUNT(*) CNT
+		FROM ADDPEOPLE
+		WHERE USERID = #{userId}
+		GROUP BY PEOPLENAME
+		ORDER BY CNT
+	</select>
+	
+	<!-- 특정 단어가 이름에 포함된 사람 추출 -->
+	<select id="searchPeopleByName" parameterType="String" resultType="people">
+	SELECT  peopleName, peopleCnt, photoUrl
+	FROM ADDPEOPLE
+	WHERE PEOPLENAME LIKE '%'+#{name}+'%'
+	</select>
+	
+</mapper>

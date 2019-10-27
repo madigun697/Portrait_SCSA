@@ -1,0 +1,24 @@
+package org.iptime.madigun697.service;
+
+import org.iptime.madigun697.dao.GPSLogDAO;
+import org.iptime.madigun697.vo.GPSLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class GPSLogServiceImpl implements GPSLogService {
+
+	@Autowired
+	private GPSLogDAO gpsLogDao;
+	
+	@Override
+	public void addLog(GPSLog gpsLog) {
+		gpsLogDao.insertLog(gpsLog);
+	}
+
+	@Override
+	public GPSLog searchLog(String time, String userId) {
+		return gpsLogDao.selectLog(time, userId);
+	}
+
+}

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="photoInfo">
+
+	<resultMap id="photoMap" type="Photo">
+		<id property="photoId" column="PHOTOID" />
+		<result property="albumId" column="ALBUMID" />
+		<result property="photoTitle" column="PHOTOTITLE" />
+		<result property="photoUrl" column="PHOTOURL" />
+		<result property="fstop" column="FSTOP" />
+		<result property="make" column="MAKE" />
+		<result property="model" column="MODEL" />
+		<result property="exposure" column="EXPOSURE" />
+		<result property="iso" column="ISO" />
+		<result property="time" column="TIME" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="geoTag" column="GEOTAG" />
+		<result property="eventId" column="EVENTID" />
+		<result property="userId" column="USERID" />
+	</resultMap>
+	
+	<insert id="syncPhoto" parameterType="java.util.List">
+		<foreach collection="list" item="element" index="index" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+		INTO PHOTO(
+			PHOTOID, ALBUMID, PHOTOTITLE, PHOTOURL, TIME, USERID
+			<if test="element.fstop!=null">
+			, FSTOP
+			</if>
+			<if test="element.make!=null">
+			, MAKE
+			</if>
+			<if test="element.model!=null">
+			, MODEL
+			</if>
+			<if test="element.exposure!=null">
+			, EXPOSURE
+			</if>
+			<if test="element.iso!=null">
+			, ISO
+			</if>
+			<if test="element.description!=null">
+			, DESCRIPTION
+			</if>
+			<if test="element.geoTag!=null">
+			, GEOTAG
+			</if>
+			<if test="element.eventId!=null">
+			, EVENTID
+			</if>
+		) VALUES (
+			#{element.photoId}, #{element.albumId}, #{element.photoTitle}, #{element.photoUrl}, #{element.time}, #{element.userId}
+			<if test="element.fstop!=null">
+			, #{element.fstop}
+			</if>
+			<if test="element.make!=null">
+			, #{element.make}
+			</if>
+			<if test="element.model!=null">
+			, #{element.model}
+			</if>
+			<if test="element.exposure!=null">
+			, #{element.exposure}
+			</if>
+			<if test="element.iso!=null">
+			, #{element.iso}
+			</if>
+			<if test="element.description!=null">
+			, #{element.description}
+			</if>
+			<if test="element.geoTag!=null">
+			, #{element.geoTag}
+			</if>
+			<if test="element.eventId!=null">
+			, #{element.eventId}
+			</if>
+		)
+		</foreach>
+	</insert>
+	
+	<delete id="deletePhotoByUserId" parameterType="String">
+		DELETE FROM PHOTO WHERE USERID = #{userId}
+	</delete>
+
+</mapper>

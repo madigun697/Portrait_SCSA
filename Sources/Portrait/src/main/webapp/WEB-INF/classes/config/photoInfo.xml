@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="photoInfo">
+
+	<resultMap id="photoMap" type="Photo">
+		<id property="photoId" column="PHOTOID" />
+		<result property="albumId" column="ALBUMID" />
+		<result property="photoTitle" column="PHOTOTITLE" />
+		<result property="photoUrl" column="PHOTOURL" />
+		<result property="fstop" column="FSTOP" />
+		<result property="make" column="MAKE" />
+		<result property="model" column="MODEL" />
+		<result property="exposure" column="EXPOSURE" />
+		<result property="iso" column="ISO" />
+		<result property="time" column="TIME" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="geoTag" column="GEOTAG" />
+		<result property="eventId" column="EVENTID" />
+		<result property="userId" column="USERID" />
+		<collection property="album" ofType="Album">
+			<id property="albumId" column="ALBUMID" />
+			<result property="userId" column="USERID" />
+			<result property="albumTitle" column="ALBUMTITLE" />
+			<result property="albumThumnailLink" column="ALBUMTHUMNAILLINK" />
+			<result property="type" column="TYPE" />
+		</collection>
+	</resultMap>
+	
+	<!-- 사진 추가 -->
+	<insert id="insertPhoto" parameterType="Photo">
+		INSERT INTO PHOTO (
+		PHOTOID, ALBUMID, PHOTOTITLE, PHOTOURL, TIME, USERID
+			<if test="fstop!=null">
+			, FSTOP
+			</if>
+			<if test="make!=null">
+			, MAKE
+			</if>
+			<if test="model!=null">
+			, MODEL
+			</if>
+			<if test="exposure!=null">
+			, EXPOSURE
+			</if>
+			<if test="iso!=null">
+			, ISO
+			</if>
+			<if test="description!=null">
+			, DESCRIPTION
+			</if>
+			<if test="geoTag!=null">
+			, GEOTAG
+			</if>
+			<if test="eventId!=null">
+			, EVENTID
+			</if>
+		) VALUES (
+			#{photoId}, #{albumId}, #{photoTitle}, #{photoUrl}, #{time}, #{userId}
+			<if test="fstop!=null">
+			, #{fstop}
+			</if>
+			<if test="make!=null">
+			, #{make}
+			</if>
+			<if test="model!=null">
+			, #{model}
+			</if>
+			<if test="exposure!=null">
+			, #{exposure}
+			</if>
+			<if test="iso!=null">
+			, #{iso}
+			</if>
+			<if test="description!=null">
+			, #{description}
+			</if>
+			<if test="geoTag!=null">
+			, #{geoTag}
+			</if>
+			<if test="eventId!=null">
+			, #{eventId}
+			</if>
+		)
+	</insert>
+	
+	<!-- 전체 사진 동기화 -->
+	<insert id="syncPhoto" parameterType="java.util.List">
+		<foreach collection="list" item="element" index="index" open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+		INTO PHOTO(
+			PHOTOID, ALBUMID, PHOTOTITLE, PHOTOURL, TIME, USERID
+			<if test="element.fstop!=null">
+			, FSTOP
+			</if>
+			<if test="element.make!=null">
+			, MAKE
+			</if>
+			<if test="element.model!=null">
+			, MODEL
+			</if>
+			<if test="element.exposure!=null">
+			, EXPOSURE
+			</if>
+			<if test="element.iso!=null">
+			, ISO
+			</if>
+			<if test="element.description!=null">
+			, DESCRIPTION
+			</if>
+			<if test="element.geoTag!=null">
+			, GEOTAG
+			</if>
+			<if test="element.eventId!=null">
+			, EVENTID
+			</if>
+		) VALUES (
+			#{element.photoId}, #{element.albumId}, #{element.photoTitle}, #{element.photoUrl}, #{element.time}, #{element.userId}
+			<if test="element.fstop!=null">
+			, #{element.fstop}
+			</if>
+			<if test="element.make!=null">
+			, #{element.make}
+			</if>
+			<if test="element.model!=null">
+			, #{element.model}
+			</if>
+			<if test="element.exposure!=null">
+			, #{element.exposure}
+			</if>
+			<if test="element.iso!=null">
+			, #{element.iso}
+			</if>
+			<if test="element.description!=null">
+			, #{element.description}
+			</if>
+			<if test="element.geoTag!=null">
+			, #{element.geoTag}
+			</if>
+			<if test="element.eventId!=null">
+			, #{element.eventId}
+			</if>
+		)
+		</foreach>
+	</insert>
+	
+	<!-- 사진 정보 수정 -->
+	<update id="updatePhoto" parameterType="Photo">
+		UPDATE PHOTO SET ALBUMID = #{albumId} 
+		<if test="description != null">
+		,DESCRIPTION = #{description}
+		</if>
+		<if test="geoTag != null">
+		, GEOTAG = #{geoTag}
+		</if>
+		<if test="eventId != null">
+		,EVENTID = #{eventId}
+		</if>
+		<if test="time != null">
+		,TIME = #{time}
+		</if>
+		WHERE PHOTOID = #{photoId}
+	</update>
+	
+	<!-- 사진 삭제 -->
+	<delete id="deletePhoto" parameterType="Photo">
+		DELETE FROM PHOTO WHERE USERID = #{userId} AND PHOTOID = #{photoId}
+	</delete>
+	
+	<!-- 동기화를 위해 사용자 모든 사진 삭제 -->
+	<delete id="deletePhotoByUserId" parameterType="String">
+		DELETE FROM PHOTO WHERE USERID = #{userId}
+	</delete>
+	
+	<!-- 특정 사용자 사진 추출 -->
+	<select id="selectPhotoList" parameterType="Photo" resultMap="photoMap">
+		SELECT *
+		FROM PHOTO P, ALBUM A
+		WHERE P.USERID = #{userId}
+		<if test="albumId != null">
+		AND P.ALBUMID = #{albumId}
+		</if> 
+		AND P.ALBUMID = A.ALBUMID
+		ORDER BY TIME
+	</select>
+	
+	<!-- 특정 사진 추출 -->
+	<select id="selectPhoto" parameterType="String" resultMap="photoMap">
+		SELECT * FROM PHOTO P, ALBUM A WHERE PHOTOID = #{photoId} AND P.ALBUMID = A.ALBUMID ORDER BY TIME DESC
+	</select>
+	
+	<!-- 특정 인물이 등록된 사진 랜덤 추출 -->
+	<select id="selectPhotoUrl" parameterType="People" resultType="String">
+		SELECT PHOTOURL FROM PHOTO WHERE PHOTOID =
+		(SELECT PHOTOID FROM (SELECT PHOTOID FROM ADDPEOPLE WHERE PEOPLENAME = #{peopleName} AND USERID = #{userId} ORDER BY DBMS_RANDOM.VALUE) 
+		WHERE ROWNUM = 1)
+	</select>
+	
+	<!-- 특정 인물이 등록된 사진 추출 -->
+	<select id="selectPeoplePhotoList" parameterType="People" resultMap="photoMap">
+		SELECT * FROM PHOTO
+		WHERE USERID = #{userId}
+		AND PHOTOID IN (
+		SELECT PHOTOID FROM ADDPEOPLE
+		WHERE PEOPLENAME = #{peopleName})
+	</select>
+	
+	<!-- 랜덤으로 사진에서 GPS 정보 추출 -->
+	<select id="selectRandomPhoto" parameterType="String" resultType="String">
+		SELECT GEOTAG FROM (SELECT * FROM ADDPEOPLE WHERE USERID = #{userId} AND ALBUMID = #{userId}_unsort ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1)
+	</select>
+	
+	<!-- 앨범의 사진 갯수 추출 -->
+	<select id="countPhoto" parameterType="String" resultType="int">
+ 		SELECT COUNT(*) FROM PHOTO WHERE ALBUMID = #{albumId}
+ 	</select>
+ 	
+ 	<!-- 검색 조건에 따라 검색 결과 추출 -->
+ 	<select id="search" parameterType="Search" resultType="Photo">
+ 		SELECT * FROM PHOTO
+		<where>
+		<if test="tagKeywords != null">
+		PHOTOID IN (SELECT PHOTOID FROM ADDTAG WHERE TAGID IN (SELECT TAGID FROM TAG
+			<where>
+				<foreach collection="tagKeywords" item="tags" index="index" separator="OR">
+				TAGNAME = #{tags }
+				</foreach>
+			</where>
+		))
+		</if>
+		<where></where>
+		<if test="peopleKeywords != null">
+		AND PHOTOID IN (SELECT PHOTOID FROM ADDPEOPLE
+			<where>
+				<foreach collection="peopleKeywords" item="people" index="index" separator="OR">
+				PEOPLENAME = #{people }
+				</foreach>
+			</where>
+		)
+		</if> 
+		<if test="fromDate != null">
+			AND TIME <![CDATA[ > ]]>  #{fromDate}
+			AND TIME <![CDATA[ < ]]>  #{toDate}
+		</if>
+		AND USERID = #{userId}
+		</where>
+ 	</select>
+
+</mapper>

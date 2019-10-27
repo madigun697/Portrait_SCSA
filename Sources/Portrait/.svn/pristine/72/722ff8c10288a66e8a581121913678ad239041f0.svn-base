@@ -1,0 +1,120 @@
+package org.iptime.madigun697.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.iptime.madigun697.dao.PhotoDAO;
+import org.iptime.madigun697.vo.Photo;
+import org.iptime.madigun697.vo.Tag;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PhotoServiceImpl implements PhotoService {
+	
+	@Autowired 
+	private PhotoDAO photoDao;
+
+	// picasa와 portrait의 사진 동기화
+	@Override
+	public List<Photo> syncPhoto(List<Photo> photoList) {
+		// userId 추출
+		if (photoList.size() != 0) {
+			String userId = photoList.get(0).getUserId();
+			
+			// 기존 사진 데이터 삭제
+			boolean flag = false; 
+			do {
+				flag = photoDao.deletePhoto(userId);
+			}
+			while (!flag);
+			
+			// 추가 미분류 앨범 확인
+			photoList = updateUnsortPhotos(photoList, userId);
+			
+			// 새로운 사진 데이터로 업데이트
+			photoDao.insertPhotoList(photoList);
+			
+			for (Photo photo : photoList) {
+				System.out.println(photo);
+			}
+			
+			// DB에서 사진 로드
+			Photo photo = new Photo();
+			photo.setUserId(userId);
+			return photoDao.selectPhotoList(photo);
+		} else {
+			return photoList;
+		}
+	}
+
+	// 미분류 사진 앨범정보 Update
+	@Override
+	public List<Photo> updateUnsortPhotos(List<Photo> photoList, String userId) {
+		for (Photo photo : photoList) {
+			photo = parseComments(photo, userId);
+		}
+		return photoList;
+	}
+
+	// 사진 목록 불러오기
+	@Override
+	public List<Photo> getPhotoList(Photo photo) {
+		return photoDao.selectPhotoList(photo);
+	}
+
+	// 사진 삭제
+	@Override
+	public void deletePhoto(String photoId, String userId) {
+		photoDao.deletePhoto(photoId, userId);
+	}
+
+	// 사진 추가
+	@Override
+	public Photo newPhoto(Photo newPhoto, String userId) {
+		newPhoto = parseComments(newPhoto, userId);
+		photoDao.insertPhoto(newPhoto);
+		return newPhoto;
+	}
+
+	// 사진 불러오기
+	@Override
+	public Photo getPhoto(String photoId) {
+		return photoDao.selectPhoto(photoId);
+	}
+	
+	// 사진 수정하기
+	@Override
+	public void updatePhoto(Photo updatePhoto) {
+		photoDao.updatePhoto(updatePhoto);
+	}
+
+	// Comments에 입력된 커스텀 JSON 객체를 나누어 Photo 객체에 저장
+	public Photo parseComments(Photo photo, String userId) {
+		JSONObject desc = new JSONObject(photo.getDescription());
+		
+		if (desc.has("album")) {
+			photo.setAlbumId(desc.get("album").toString());
+		}
+		if (desc.has("event")) {
+			photo.setEventId(desc.get("event").toString());
+		}
+		if (desc.has("comments")) {	
+			photo.setDescription(desc.get("comments").toString());
+		} else {
+			photo.setDescription("");
+		}
+		//			System.out.println(desc.get("tags"));
+		//			System.out.println(desc.get("people"));
+		
+		// 앨범 아이디가 없는 경우 미분류 앨범으로 지정
+		if (photo.getAlbumId() == null || photo.getAlbumId().trim().length() == 0) {
+			photo.setAlbumId(userId + "_unsort");
+			}
+		return photo;
+	}
+
+}

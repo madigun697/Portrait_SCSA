@@ -1,0 +1,175 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+<%--<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-1.11.1.min.js"></script>
+ --%>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<link href='http://fonts.googleapis.com/css?family=Kelly+Slab'
+	rel='stylesheet' type='text/css'>
+<link href="${pageContext.request.contextPath}/css/reset.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/parallax_style_1.1.3.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/css/bootstrap.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/css/style.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/css/services_slider/lean-slider.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/portfolio_gallery.css">
+<link href="${pageContext.request.contextPath}/css/slicebox.css" rel="stylesheet" />
+<!--3D Slider-->
+
+<!-- Gallery Section-->
+<script id="img-wrapper-tmpl" type="text/x-jquery-tmpl">	
+			<div class="rg-image-wrapper">
+				{{if itemsCount > 1}}
+					<div class="rg-image-nav">
+						<a href="#" class="rg-image-nav-prev">Previous Image</a>
+						<a href="#" class="rg-image-nav-next">Next Image</a>
+					</div>
+				{{/if}}
+				<div class="rg-image"></div>
+				<div class="rg-loading"></div>
+				<div class="rg-caption-wrapper">
+					<div class="rg-caption" style="display:none;">
+						<p></p>
+					</div>
+				</div>
+			</div>
+		</script>
+
+
+<!-- Fav and touch icons -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144"
+	href="icon/apple-touch-icon-144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114"
+	href="icon/apple-touch-icon-114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72"
+	href="icon/apple-touch-icon-72-precomposed.png">
+<link rel="apple-touch-icon-precomposed"
+	href="icon/apple-touch-icon-57-precomposed.png">
+<link rel="shortcut icon" href="icon/favicon.ico">
+</head>
+
+<body class="clearfix" data-spy="scroll" data-target="#navbar"
+	data-offset="10">
+
+	
+	<center>
+		<div class="container-fluid clearfix welcome" style="height: 100px">
+
+			<div class="row-fluid">
+				<div id="welcome">
+					<div class="container clearfix">
+						<div class="wrapper">
+							<h1>Welcome to Portrait</h1>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</center>
+
+	<div class="container-fluid clearfix welcome" style="height: 750px">
+		<div class="row-fluid">
+			<div id="welcome">
+				<div class="container clearfix">
+					<div class="wrapper">
+						<ul id="sb-slider" class="sb-slider">
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/1.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>hello chao annyeonghaaseyo gonnichiwa nihao</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/2.jpg"
+									alt="image2" /></a>
+								<div class="sb-description">
+									<h3>Honest Entertainer</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/3.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>Brave Astronaut</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/4.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>Affectionate Decision Maker</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/5.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>Faithful Investor</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="${pageContext.request.contextPath}/images/6.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>Groundbreaking Artist</h3>
+								</div></li>
+							<li><a href="#" target="_blank"><img src="images/7.jpg"
+									alt="image1" /></a>
+								<div class="sb-description">
+									<h3>Selfless Philantropist</h3>
+								</div></li>
+						</ul>
+						<div id="shadow" class="shadow"></div>
+						<div id="nav-arrows" class="nav-arrows">
+							<a href="#">Next</a> <a href="#">Previous</a>
+						</div>
+					</div>
+					<!-- /wrapper -->
+
+				</div>
+			</div>
+		</div>
+		<center>
+			<br> <span style="text-align: center; font-family: '맑은 고딕'">당신의
+				소중한 기록을 위해... 하하 블라블라블라</span><br> <br>
+		</center>
+	</div>
+	<!-- 	
+		<div>
+			<a class="brand" href="#" style="margin-left: 50%; margin-bottom: 0%">ⓒ Portrait</a>
+		</div>
+	 -->
+
+
+
+	<!-- Le javascript==================================================-->
+<!-- Placed at the end of the document so the pages load faster --> 
+
+
+<script src="${pageContext.request.contextPath}/js/jquery-1.8.2.min.js"></script>
+ 
+<script src="${pageContext.request.contextPath}/js/lean-slider.min.js"></script><!-- Services Slider--> 
+<script src="${pageContext.request.contextPath}/js/jquery.sticky.min.js"></script><!-- sticky Nav--> 
+<script src="${pageContext.request.contextPath}/js/my_script.js"></script> 
+<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script> 
+<script src="${pageContext.request.contextPath}/js/jquery.easing.1.3.min.js"></script><!-- parallax--> 
+<script src="${pageContext.request.contextPath}/js/modernizr-2.6.1.min.js"></script><!--blur slidShow --> 
+<script src="${pageContext.request.contextPath}/js/jquery.validate.js"></script> 
+<script src="${pageContext.request.contextPath}/js/jquery.parallax-1.1.3.min.js"></script><!--  parallax--> 
+<script src="${pageContext.request.contextPath}/js/jquery.localscroll-1.2.7-min.js"></script><!--  parallax--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.tmpl.min.js"></script><!--grid slidShow --><!-- &Services Gallery--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.kinetic.min.js"></script><!--grid slidShow --> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.iconmenu.min.js"></script><!--Services  Blocks--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-hover-effect.min.js"></script><!--PortfolioGallery--> 
+<script src="${pageContext.request.contextPath}/js/lightbox/jquery.classybox.min.js"></script><!--jquery-classybox LightBox--> 
+<script src="${pageContext.request.contextPath}/js/lightbox/jwplayer.js"></script><!--jquery-classybox LightBox--> 
+<script src="${pageContext.request.contextPath}/js/lightbox/jwplayer.html5.js"></script><!--jquery-classybox LightBox--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.elastislide.min.js"></script><!-- Gallery Section--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/gallery.min.js"></script><!-- Gallery Section--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.tweet.min.js"></script><!--Tweet ticker--> 
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.slicebox.min.js"></script><!--3D Slider-->
+<script type="text/javascript" src="js/3d_slider/call_slicebox.min.js"></script><!--3D Slider-->  
+	<!--jquery-classybox LightBox-->
+	<script>
+		$(".lightbox span.zoom a").ClassyBox({
+			widthWindow : 900
+		});
+	</script>
+</body>
+</html>

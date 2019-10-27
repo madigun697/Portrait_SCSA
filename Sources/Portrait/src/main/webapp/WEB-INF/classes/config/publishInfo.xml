@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="publishInfo">
+			<resultMap id="publishMap" type="Publish">
+				<id property="publishId" column="PUBLISHID" />
+				<result property="receiveUserId" column="RECEIVEUSERID" />
+				<result property="publishUserId" column="PUBLISHUSERID" />
+				<result property="publishAlbumId" column="PUBLISHALBUMID" />
+				<result property="publishAlbumTitle" column="PUBLISHALBUMTITLE" />
+				<result property="publishDate" column="PUBLISHDATE" />
+				<result property="photoPath" column="PHOTOPATH" />
+				<result property="receiveMsg" column="RECEIVEMSG" />
+				<result property="accept" column="ACCEPTED"/>
+			</resultMap>
+	
+		
+	<!-- 새로운 publish 정보 삽입 -->
+	<insert id="insertPublishDB" parameterType="Publish">
+		INSERT INTO PUBLISH VALUES (#{publishId}, #{receiveUserId}, #{publishUserId}, #{publishAlbumId},
+		#{publishAlbumTitle}, sysdate, #{photoPath}, 'false', 'true')
+			
+	</insert>
+	
+	<!-- 전송된 사진 목록 중 받지 않은 것들의 앨범아이디를 반환 -->
+	<select id="getPublishInfo" parameterType="String" resultMap="publishMap">
+		SELECT DISTINCT PUBLISHALBUMID , PUBLISHALBUMTITLE FROM PUBLISH 
+		WHERE RECEIVEUSERID = #{userId}
+		AND RECEIVEMSG = 'false'
+		AND ACCEPTED = 'true'
+	</select>
+	
+	
+	<!--  userId와 publishAlbumId를 이용해 해당 앨범의 사진을 가지고 온다.--> 
+	  <select id="getPublish" parameterType="Publish" resultMap="publishMap">
+	  SELECT * FROM PUBLISH 
+	  WHERE PUBLISHALBUMID=#{publishAlbumId} AND RECEIVEUSERID=#{receiveUserId}
+	  </select> 
+	  
+ 	<!--  denyList를 가져와 receivedMsg를 True, accept를 false 로 바꾼다.(확인 O, 수락X)--> 
+	  <update id="denyPublish" parameterType="Publish">
+	  UPDATE PUBLISH SET RECEIVEMSG='true', ACCEPTED='false' 
+	  WHERE RECEIVEUSERID = #{receiveUserId} and PUBLISHALBUMID=#{publishAlbumId}
+	  </update> 
+	  
+	<!--  acceptList를 가져와 receivedMsg를 True, accept를 True 로 바꾼다.(확인 O, 수락O)-->   
+	 <update id="acceptPublish" parameterType="Publish">
+	  UPDATE PUBLISH SET RECEIVEMSG='true', ACCEPTED='true' 
+	  WHERE RECEIVEUSERID = #{receiveUserId} and PUBLISHALBUMID=#{publishAlbumId}
+	  </update> 
+</mapper>

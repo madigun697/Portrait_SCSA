@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eventInfo">
+
+	<resultMap id="eventMap" type="Event">
+		<id property="eventId" column="EVENTID" />
+		<result property="eventName" column="EVENTNAME" />
+		<result property="eventDate" column="EVENTDATE" />
+		<result property="userId" column="USERID" />
+		<result property="eventDesc" column="EVENTDESC"/>
+	</resultMap>
+	<resultMap id="photoMap" type="Photo">
+		<id property="photoId" column="PHOTOID" />
+		<result property="albumId" column="ALBUMID" />
+		<result property="photoTitle" column="PHOTOTITLE" />
+		<result property="photoUrl" column="PHOTOURL" />
+		<result property="fstop" column="FSTOP" />
+		<result property="make" column="MAKE" />
+		<result property="model" column="MODEL" />
+		<result property="exposure" column="EXPOSURE" />
+		<result property="iso" column="ISO" />
+		<result property="time" column="TIME" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="geoTag" column="GEOTAG" />
+		<result property="eventId" column="EVENTID" />
+		<result property="userId" column="USERID" />
+		<collection property="album" ofType="Album">
+			<id property="albumId" column="ALBUMID" />
+			<result property="userId" column="USERID" />
+			<result property="albumTitle" column="ALBUMTITLE" />
+			<result property="albumThumnailLink" column="ALBUMTHUMNAILLINK" />
+			<result property="type" column="TYPE" />
+		</collection>
+	</resultMap>
+	
+	<!-- 새로운 이벤트 삽입 -->
+	<insert id="addEvent" parameterType="Event">
+		INSERT INTO	EVENT VALUES (#{eventId}, #{eventName}, TO_DATE(#{eventDate}, 'mm/dd/yyyy'), #{userId}
+			<if test="eventDesc !=null or eventDesc !=''">
+				, #{eventDesc}
+			</if>
+			)
+	</insert>
+	
+	<!-- 등록된 이벤트에 해당하는 사진들의 eventId를 업데이트 -->
+	<update id="updateEventId" parameterType="Photo">
+		UPDATE PHOTO SET EVENTID = #{eventId} WHERE PHOTOID=#{photoId}
+	</update>
+	
+	<!-- userId 로 이벤트 리스트 불러내기 -->
+	<select id="getEventList" parameterType="String" resultMap="eventMap">
+		SELECT EVENTID, EVENTNAME, TO_CHAR(EVENTDATE, 'yyyy/mm/dd') EVENTDATE, USERID, EVENTDESC
+        FROM EVENT
+        WHERE USERID = #{userId} ORDER BY EVENTDATE DESC
+	</select>
+	
+	<!-- eventId로 해당 이벤트 리스트 사진 불러내기 -->
+	<select id="findEventPhoto" parameterType="String" resultMap="photoMap">
+		SELECT * FROM PHOTO WHERE EVENTID = #{eventId}
+	</select>
+	
+	<!-- eventId 로 이벤트 리스트 불러내기 -->
+	<select id="searchEvent" parameterType="String" resultMap="eventMap">
+		SELECT E.EVENTID, E.EVENTNAME, TO_CHAR(EVENTDATE, 'yyyy/mm/dd') EVENTDATE, E.USERID, E.EVENTDESC
+        FROM EVENT E
+        WHERE E.EVENTID = #{eventId}
+	</select>
+	
+	<!-- userId로 event 등록이 안 된 사진만 조회하는 기능-->
+	<select id="addiblePhotos" parameterType="String" resultMap="photoMap">
+		SELECT * 
+		FROM PHOTO P, USERS U
+		WHERE U.USERID = P.USERID AND U.USERID =#{userId}
+		  AND P.EVENTID IS NULL
+	</select>
+	
+	
+	<!-- 등록된 이벤트에 해당하는 사진들의 eventId를 null로 set -->
+	<update id="makeEventIdNull" parameterType="Photo">
+		UPDATE PHOTO SET EVENTID ='' WHERE PHOTOID=#{photoId}
+	</update>
+	
+	<!-- 등록된 이벤트에 해당하는 사진들의 eventId를 새로 set -->
+	<update id="setNewEventId" parameterType="Photo">
+		UPDATE PHOTO SET EVENTID = #{eventId} WHERE PHOTOID=#{photoId}
+	</update>
+	
+	<!-- 등록된 이벤트 테이블을 삭제 -->
+	<delete id="deleteEvent" parameterType="String">
+		DELETE FROM EVENT WHERE EVENTID=#{eventId}
+	</delete>
+	
+	<!-- eventId로 photoUrl 랜덤으로 불러오기 -->
+	<select id="getPhotoUrl" parameterType="String" resultType="String">
+		SELECT PHOTOURL FROM PHOTO WHERE PHOTOID=
+		(SELECT PHOTOID FROM (SELECT PHOTOID FROM PHOTO WHERE EVENTID=#{evnetId} ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM=1)
+	</select>
+
+</mapper>

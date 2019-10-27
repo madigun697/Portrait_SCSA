@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="User" type="org.iptime.madigun697.vo.User" />
+		<typeAlias alias="Photo" type="org.iptime.madigun697.vo.Photo" />
+		<typeAlias alias="Album" type="org.iptime.madigun697.vo.Album" />
+		<typeAlias alias="Tag" type="org.iptime.madigun697.vo.Tag" />
+		<typeAlias alias="Event" type="org.iptime.madigun697.vo.Event" />
+		<typeAlias alias="People" type="org.iptime.madigun697.vo.People" />
+		<typeAlias alias="Publish" type ="org.iptime.madigun697.vo.Publish"/>
+		<typeAlias alias="GPSLog" type ="org.iptime.madigun697.vo.GPSLog"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="/config/userInfo.xml" />
+		<mapper resource="/config/photoInfo.xml" />
+		<mapper resource="/config/albumInfo.xml" />
+		<mapper resource="/config/tagInfo.xml" />
+		<mapper resource="/config/eventInfo.xml"/>
+		<mapper resource="/config/peopleInfo.xml" />
+		<mapper resource="/config/publishInfo.xml"/>
+		<mapper resource="/config/gpsLogInfo.xml"/>
+	</mappers>
+</configuration>

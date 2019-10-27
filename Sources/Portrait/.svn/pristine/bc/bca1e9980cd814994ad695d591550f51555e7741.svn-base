@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="albumInfo">
+
+	<resultMap id="albumMap" type="Album">
+		<id property="albumId" column="ALBUMID" />
+		<result property="userId" column="USERID" />
+		<result property="albumTitle" column="ALBUMTITLE" />
+		<result property="albumThumnailLink" column="ALBUMTHUMNAILLINK" />
+		<result property="type" column="TYPE" />
+	</resultMap>
+	
+	<!-- 새로운 앨범 생성 -->
+	<insert id="insertAlbum" parameterType="Album">
+		INSERT INTO ALBUM VALUES (#{albumId}, #{userId}, #{albumTitle}, #{albumThumnailLink}, #{type})
+	</insert>
+	
+	<!-- 사용자 ID를 통해 피카사 앨범 ID 추출 -->
+ 	<select id="selectAlbumList" parameterType="String" resultMap="albumMap">
+ 		SELECT * FROM ALBUM WHERE USERID = #{userId}
+ 	</select>
+ 	
+ 	<!-- 사용자 ID와 앨범명을 통해 앨범 ID 추출 -->
+ 	<select id="selectAlbumByTitle" parameterType="Album" resultType="String">
+ 		SELECT ALBUMID FROM ALBUM WHERE USERID = #{userId} AND ALBUMTITLE = #{albumTitle}
+ 	</select>
+
+</mapper>

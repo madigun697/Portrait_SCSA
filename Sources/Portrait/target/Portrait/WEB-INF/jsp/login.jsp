@@ -1,0 +1,25 @@
+<%@page import="org.iptime.madigun697.util.AuthHelper"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+
+<link href="css/reset.css" rel="stylesheet">
+<link href="css/parallax_style_1.1.3.css" rel="stylesheet" />
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet" />
+
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+	<h1>Protrait Dev (LocalHost용)</h1>
+	<form action="hello.do" method="post">
+<!-- 	<form action="index.do" method="post"> -->
+		<input type="text" name="token">
+		<input type="submit" value="로그인">
+	</form>
+</body>
+</html>

@@ -1,0 +1,56 @@
+package org.iptime.madigun697.dao;
+
+import java.util.List;
+
+import org.iptime.madigun697.vo.Tag;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TagDAOImpl implements TagDAO {
+	
+	@Autowired
+	private SqlSessionTemplate session;
+
+	@Override
+	public String selectTagByName(String tagName) {
+		return session.selectOne("selectByName", tagName);
+	}
+
+	@Override
+	public void newTag(String tagId, String tagName) {
+		Tag tag = new Tag();
+		tag.setTagId(tagId);
+		tag.setTagName(tagName);
+		session.insert("insertTag", tag);
+	}
+
+	@Override
+	public void addTag(Tag tag) {
+		session.insert("insertTagInPhoto", tag);
+	}
+
+	@Override
+	public List<Tag> selectTag(String photoId, String userId) {
+		Tag tag = new Tag();
+		tag.setPhotoId(photoId);
+		tag.setUserId(userId);
+		return session.selectList("selectTags", tag);
+	}
+
+	@Override
+	public void deleteTag(String userId, String photoId) {
+		Tag tag = new Tag();
+		tag.setPhotoId(photoId);
+		tag.setUserId(userId);
+		session.delete("deleteTagInPhoto", tag);
+	}
+
+	@Override
+	public List<Tag> selectAllTag() {
+		return session.selectList("selectAllTag");
+	}
+	
+	
+}

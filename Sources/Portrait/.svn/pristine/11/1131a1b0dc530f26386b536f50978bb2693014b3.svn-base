@@ -1,0 +1,15 @@
+package org.iptime.madigun697.dao;
+
+import java.util.List;
+
+import org.iptime.madigun697.vo.Photo;
+
+public interface PhotoDAO {
+
+	// userId를 통해 사진 삭제
+	boolean deletePhoto(String userId);
+
+	// 사진 정보 DB에 추가
+	void insertPhotos(List<Photo> photoList);
+
+}

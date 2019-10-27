@@ -1,0 +1,74 @@
+package org.iptime.madigun697.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.iptime.madigun697.dao.PeopleDAO;
+import org.iptime.madigun697.vo.People;
+import org.iptime.madigun697.vo.PeopleCnt;
+import org.iptime.madigun697.vo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PeopleServiceImpl implements PeopleService {
+	
+	@Autowired
+	private PeopleDAO peopleDao;
+
+	@Override
+	public void removePeople(String photoId, String userId) {
+		People people = new People();
+		people.setPhotoId(photoId);
+		people.setUserId(userId);
+		peopleDao.deletePeople(people);
+	}
+
+	@Override
+	public People addPeople(String peopleName, String photoId, String userId) {
+		peopleName = peopleName.trim();
+		People people = new People(photoId, peopleName, userId);
+		peopleDao.insertPeople(people);
+		return people;
+	}
+
+	@Override
+	public List<People> getPeople(String photoId, String userId) {
+		People people = new People();
+		people.setPhotoId(photoId);
+		people.setUserId(userId);
+		return peopleDao.selectPeople(people);
+	}
+
+	@Override
+	public Map<String, Integer> getPeopleCount(String userId) {
+		List<Map> peopelCnt = peopleDao.selectPeopleCnt(userId);
+
+		Map<String, Integer> peopleCntList = new HashMap<String, Integer>();
+
+		for (Map map : peopelCnt) {
+			String peopleName = map.get("PEOPLENAME").toString();
+			String cnt = map.get("CNT").toString();
+			/*System.out.println("peopleName"+peopleName);
+			System.out.println("cnt"+cnt);*/
+			peopleCntList.put(peopleName, Integer.parseInt(cnt));
+		}
+		
+		return peopleCntList;
+	}
+
+	@Override
+	public List<Integer> getCntList(String userId) {
+		return peopleDao.selectCntList(userId);
+	}
+
+	@Override
+	public List<PeopleCnt> searchName(String name) {
+		
+		return peopleDao.searchName(name);
+	}
+	
+}

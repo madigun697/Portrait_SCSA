@@ -1,0 +1,197 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Portrait</title>
+<link
+	href="http://code.google.com/apis/maps/documentation/javascript/examples/default.css"
+	rel="stylesheet" type="text/css" />
+
+<script type="text/javascript"
+	src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+<script src="js/jquery.geocomplete.js"></script>
+<script src="js/logger.js"></script>
+
+<style type="text/css">
+body {
+	background: url('images/bgnoise.jpg') 50% 0 repeat fixed;
+}
+</style>
+<script type="text/javascript">
+	var geocoder;
+	var map;
+	var marker;
+	var myLatlng = new google.maps.LatLng(37.32, 127.022);
+	var myLatlng1 = new google.maps.LatLng(37.31, 129.022);
+	var myLatlng2 = new google.maps.LatLng(39.32, 127.022);
+
+	function initialize() {
+		geocoder = new google.maps.Geocoder();
+		var latlng = myLatlng;
+		var myOptions = {
+			zoom : 12,
+			center : latlng,
+			mapTypeId : google.maps.MapTypeId.ROADMAP
+		}
+		map = new google.maps.Map(document.getElementById("map_canvas"),
+				myOptions);
+
+		var contentString = '<div id="content">' + '<div id="siteNotice">'
+				+ '</div>'
+				+ '<h1 id="firstHeading" class="firstHeading">사진타이틀</h1>'
+				+ '<div id="bodyContent">'
+				+ '<p><b>태그명 받아오기</b>, 우헤헤 <b>꾸룩꾸룩</b>, 이사진은 '
+				+ '태그명들을 가지고 있습니다. ' + '니가 하고 싶었던 이야기를 해봐.' + '</p>' + '<br>'
+				+ '<img src="images/brand.png">' + '</div>' + '</div>';
+
+		var marker = new google.maps.Marker({
+			position : myLatlng,
+			animation : google.maps.Animation.BOUNCE,
+			map : map,
+			title : 'Hello World!',
+			html : contentString
+		});
+
+		var infowindow = new google.maps.InfoWindow({
+			width : 400,
+			height : 400
+		});
+
+		google.maps.event.addListener(marker, 'click', function() {
+			infowindow.setContent(this.html);
+			infowindow.open(map, this);
+		});
+
+		// Calculate desired pixel-size of the marker
+		/* var size = Math.floor(4*(count-1) + 8); */
+
+		var image = {
+			url : 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRmeLsV0nEYVIdVvL2O0A-1nboj8pJXeTlBP7gN-q18KodrUp9p',
+			// This marker is 20 pixels wide by 32 pixels tall.
+			scaledSize : new google.maps.Size(35, 35),
+			// The origin for this image is 0,0.
+			origin : new google.maps.Point(0, 0),
+			// The anchor for this image is the base of the flagpole at 0,32.
+			anchor : new google.maps.Point(0, 32)
+		};
+		var contentString1 = '<div id="content">' + '<div id="siteNotice">'
+				+ '</div>'
+				+ '<h1 id="firstHeading" class="firstHeading">사진타이틀 Mark1</h1>'
+				+ '<div id="bodyContent">'
+				+ '<p><b>태그명 받아오기</b>, 우헤헤 <b>꾸룩꾸룩</b>, 이사진은 '
+				+ '태그명들을 가지고 있습니다. ' + '니가 하고 싶었던 이야기를 해봐.' + '</p>' + '<br>'
+				+ '<img src="images/brand.png">' + '</div>' + '</div>';
+
+		var marker1 = new google.maps.Marker({
+			position : myLatlng1,
+			map : map,
+			icon : image,
+			title : '마커',
+			html : contentString1,
+			animation : google.maps.Animation.BOUNCE
+		});
+
+		var infowindow = new google.maps.InfoWindow({
+			width : 400,
+			height : 400
+		});
+
+		google.maps.event.addListener(marker1, 'click', function() {
+			infowindow.setContent(contentString1);
+			infowindow.open(map, marker);
+
+		});
+
+		var contentString2 = '<div id="content">' + '<div id="siteNotice">'
+				+ '</div>'
+				+ '<h1 id="firstHeading" class="firstHeading">사진타이틀</h1>'
+				+ '<div id="bodyContent">'
+				+ '<p><b>태그명 받아오기</b>, 강원도 <b>호랑이 발견</b>, 이사진은 '
+				+ '태그명들을 가지고 있습니다. ' + '니가 하고 싶었던 이야기를 해봐.' + '</p>' + '<br>'
+				+ '<img src="images/port.jpg">' + '</div>' + '</div>';
+
+		var marker2 = new google.maps.Marker({
+			position : myLatlng2,
+			animation : google.maps.Animation.BOUNCE,
+			map : map,
+			title : 'Hello Worl424d!',
+			html : contentString2
+		});
+
+		var infowindow2 = new google.maps.InfoWindow({
+			width : 400,
+			height : 400
+		});
+
+		google.maps.event.addListener(marker2, 'click', function() {
+			infowindow2.setContent(this.html);
+			infowindow2.open(map, this);
+
+		});
+
+	}
+
+	function codeAddress() {
+		var address = document.getElementById("address").value;
+		var r = document.getElementById("r");
+
+		r.innerHTML = '';
+
+		geocoder.geocode({
+			'address' : address
+		}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				map.setCenter(results[0].geometry.location);
+				addMark(results[0].geometry.location.lat(),
+						results[0].geometry.location.lng());
+
+			} else {
+				r.innerHTML = "검색 결과가 없습니다." + status;
+			}
+		});
+	}
+</script>
+</head>
+<body onload="initialize()">
+	<center>
+		<div style="margin-top: 5%;"></div>
+		<form>
+			<input id="address" type="text" placeholder="주소를 써봐욤" size="90" /> <input
+				type="button" value="Geocode" onclick="codeAddress()" />
+		</form>
+
+		<div id="r"></div>
+
+		<div id="map_canvas" style="height: 600px; width: 80%; top: 30px;"></div>
+	</center>
+	<script type="text/javascript">
+		$(function() {
+
+			$("#address").geocomplete(map).bind("geocode:result",
+					function(event, result) {
+						$.log("Result: " + result.formatted_address);
+					}).bind("geocode:error", function(event, status) {
+				$.log("ERROR: " + status);
+			}).bind("geocode:multiple", function(event, results) {
+				$.log("Multiple: " + results.length + " results found");
+			});
+
+			$("#find").click(function() {
+				$("#geocomplete").trigger("geocode");
+			});
+
+			$("#examples a").click(function() {
+				$("#geocomplete").val($(this).text()).trigger("geocode");
+				return false;
+			});
+
+		});
+	</script>
+
+
+</body>
+</html>

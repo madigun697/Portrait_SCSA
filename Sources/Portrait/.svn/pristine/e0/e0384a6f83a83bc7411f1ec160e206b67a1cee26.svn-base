@@ -1,0 +1,36 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Portrait</title>
+<link rel="shortcut icon" href="./img/portraitfavicon.ico">
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+<div class="oauthDemo">
+<p><a href="logout.do">logout</a></p>
+<table style="border: 1px solid gray">
+		<c:forEach items="${sessionScope.albumList }" var="album" varStatus="status">
+			<c:choose>
+				<c:when test="${status.index == 0 || status.index % 5 == 0 }">
+					<tr>
+						<td align="center">
+							<a href="albumView.do?albumId=${album.albumId}"><img src="${album.albumThumnailLink }" width="150px"></a><br>
+							${album.albumTitle }<br>
+						</td>
+				</c:when>
+				<c:otherwise>
+						<td align="center">
+							<a href="albumView.do?albumId=${album.albumId }"><img src="${album.albumThumnailLink }" width="150px"></a><br>
+							${album.albumTitle }<br>
+						</td>
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>
+		</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Portrait</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- 화면 그리드 불러오기 -->
+	<link rel="stylesheet" href="css/jquery.galereya.css"> 
+
+	<!-- The 1140px Grid - http://cssgrid.net/. Modified by @angrycreative -->
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/1140.css" type="text/css" media="screen" />
+	
+	<!-- STYLESHEETS -->
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/generic.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="wp-content/themes/erikj/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/wpcf7.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/wpseobc.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/menu.css" type="text/css" media="all" />
+	
+	<script type="text/javascript" src="wp-content/themes/erikj/js/css3-mediaqueries.js"></script>
+
+<script type='text/javascript'>try{jQuery.noConflict();}catch(e){};</script>
+<!-- <script type='text/javascript' src='wp-content/themes/erikj/js/jquery.cookie.js?ver=3.3.2'></script> -->
+<%--	
+	<!-- Make sure jQuery is loaded. Loads Jquery from Google if not loaded by a plugin. -->
+	<script type="text/javascript" src="wp-content/themes/erikj/js/jQueryLoader.js"></script>
+	
+	<!-- SUPERFISH -->
+	<script type="text/javascript" src="wp-content/themes/erikj/js/hoverIntent.js"></script>
+	<script type="text/javascript" src="wp-content/themes/erikj/js/superfish.js"></script>
+	
+	<!-- Flexslider -->
+	<link rel="stylesheet" href="wp-content/themes/erikj/css/flexslider.css" type="text/css">
+	<script src="wp-content/themes/erikj/js/jquery.flexslider.js"></script>
+ 
+	<!-- Masonry -->
+	<script src="wp-content/themes/erikj/js/jquery.masonry.min.js"></script>
+	
+	
+<!--font-awesome for Icons 불러오기 -->
+
+<link href="css/simple-sidebar.css" rel="stylesheet">
+<link href="css/reset.css" rel="stylesheet">
+<link href="css/parallax_style_1.1.3.css" rel="stylesheet" />--%>
+<link href="css/style.css" rel="stylesheet" />
+<link href="css/font-awesome.css" rel="stylesheet">
+
+<style type="text/css">
+* {
+	margin: 0px;
+	padding: 0px
+}
+
+body {
+	/* background-color: #525252; */
+	background: url('images/bgnoise.jpg') 50% 0 repeat fixed;
+}
+</style>
+</head>
+<body>
+<c:forEach items="${requestScope.cntList }" var="cnt" varStatus="status">
+<style>
+.people_photo_type${cnt} img{
+<c:choose>
+<c:when test="${status.count % 2 != 0 }">
+	width: ${((status.count/2)+(1/2)) * 140 + ((status.count/2)-(1/2)) * 12 }px;
+	height: ${((status.count/2)+(1/2)) * 140 + ((status.count/2)-(1/2)) * 12 }px;
+	object-fit: cover;
+</c:when>
+<c:otherwise>
+	width: ${((status.count/2)+1) * 140 + (status.count/2) * 12 }px;
+	height: ${((status.count/2)) * 140 + ((status.count/2)-1) * 12 }px;
+	object-fit: cover;
+</c:otherwise>
+</c:choose>	
+}
+</style>
+</c:forEach>
+	<div class="container main" id="work-page" >
+		<div class="row">
+		    <div class="twelvecol">
+				<h1 style="margin-left:30%; margin-top: 5%; margin-bottom: 5%">
+			About People <small style="color:">// AND WHO MAKE YOU
+				BRILLIANT</small>
+		</h1>
+				<div id="gal1" class="postContainer postContent masonry-container">
+					<c:forEach items="${requestScope.peopleCntList }" var="peopleCnt">
+						<a class="work-archive-thumb-link people_photo_type${peopleCnt.peopleCnt }" href="PeoplePhotoView.do?peopleName=${peopleCnt.peopleName }">
+						<img width="140px" height="140px" src="${peopleCnt.photoUrl }" class="work-masonry-thumb" alt="${peopleCnt.peopleName }" title="${peopleCnt.peopleName }" data-fullsrc="${peopleCnt.photoUrl }?imgmax=2048" />
+						</a>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		// initialise plugins
+		jQuery(function(){
+			jQuery('#menu-huvudmeny').superfish();
+		});
+		
+		jQuery(window).load(function() {
+			jQuery('.flexslider').flexslider({ directionNav: false });
+			jQuery(function(){
+				jQuery('.masonry-container').masonry({
+					itemSelector: '.work-masonry-thumb',
+					columnWidth: 152
+				});
+			});
+		});
+
+	</script>
+
+	<script type="text/javascript">
+    // <![CDATA[
+        var disqus_shortname = 'erikjohansson';
+        (function () {
+            var nodes = document.getElementsByTagName('span');
+            for (var i = 0, url; i < nodes.length; i++) {
+                if (nodes[i].className.indexOf('dsq-postid') != -1) {
+                    nodes[i].parentNode.setAttribute('data-disqus-identifier', nodes[i].getAttribute('rel'));
+                    url = nodes[i].parentNode.href.split('#', 1);
+                    if (url.length == 1) { url = url[0]; }
+                    else { url = url[1]; }
+                    nodes[i].parentNode.href = url + '#disqus_thread';
+                }
+            }
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+                        s.src = 'http' + '://' + 'disqus.com/forums/' + disqus_shortname + '/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    //]]>
+    </script>
+
+
+	
+
+	<!-- Placed at the end of the document so the pages load faster -->
+	
+	<script src="js/lean-slider.min.js"></script>
+	<script src="js/jquery.easing.1.3.min.js"></script>
+	<!-- parallax-->
+	<script src="js/modernizr-2.6.1.min.js"></script>
+	<!--blur slidShow -->
+	<script src="js/jquery.validate.min.js"></script>
+	<script src="js/jquery.parallax-1.1.3.min.js"></script>
+	<!--  parallax-->
+	<script src="js/jquery.localscroll-1.2.7-min.js"></script>
+	<!--  parallax-->
+	<script type="text/javascript" src="js/jquery.kinetic.min.js"></script>
+	<!--grid slidShow -->
+	<script type="text/javascript" src="js/jquery.iconmenu.min.js"></script>
+	<!--Services  Blocks-->
+	<script type="text/javascript" src="js/jquery.elastislide.min.js"></script>
+	<!-- Gallery Section-->
+	<script type="text/javascript" src="js/jquery.tweet.min.js"></script>
+	<script src="js/jquery.galereya.min.js"></script>
+	<!-- <script type="text/javascript">
+		$('#gal1').galereya();
+	</script> -->
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+package org.iptime.madigun697.service;
+
+import org.iptime.madigun697.dao.UserDAO;
+import org.iptime.madigun697.vo.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserServiceImpl implements UserService {
+	
+	@Autowired
+	private UserDAO userDao;
+
+	// 사용자 로그인
+	@Override
+	public String login(String userId) {
+		return userDao.login(userId);
+	}
+
+	// 신규 사용자 등록
+	@Override
+	public void registryUser(User user) {
+		userDao.insertUser(user);
+	}
+	
+}

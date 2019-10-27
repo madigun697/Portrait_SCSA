@@ -1,0 +1,27 @@
+package org.iptime.madigun697.dao;
+
+import org.iptime.madigun697.vo.User;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class UserDAOImpl implements UserDAO {
+
+	@Autowired
+	private SqlSessionTemplate session;
+	
+	// 사용자 로그인
+	@Override
+	public String login(String userId) {
+		String albumId = session.selectOne("login", userId);
+		return albumId;
+	}
+
+	// 신규 사용자 등록
+	@Override
+	public void insertUser(User user) {
+		session.insert("newUser", user);
+	}
+
+}

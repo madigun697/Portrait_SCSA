@@ -1,0 +1,85 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+div.wpcf7, div.wpcf7 .wpcf7-form {
+	clear: both;
+	float: left;
+	width: 100%;
+	margin-top: 0;
+}
+.wpcf7 p {
+	float: left;
+	width: 100%;
+	padding: 0;
+	line-height: 2em;
+}
+.wpcf7 p br {
+	display: none;
+}
+.wpcf7 input, .wpcf7 select, .wpcf7 textarea {
+	float: right !important;
+	width: 100%;
+}
+.wpcf7 input[type=submit], .wpcf7 input[type=button] {
+	width: auto;
+}
+.wpcf7 input[type=text], .wpcf7 select {
+	height: 1.75em;
+}
+.wpcf7 textarea {
+}
+.wpcf7-radio {
+	width: 210px;
+	display: block;
+}
+.wpcf7-radio .wpcf7-list-item {
+	float: left;
+}
+.wpcf7-radio .wpcf7-list-item label {
+	min-width: inherit;
+}
+.wpcf7-radio .wpcf7-list-item label input {
+	min-width: 0;
+	width: auto;
+	margin-left: 10px;
+}
+span.wpcf7-form-control-wrap {
+	position: relative;
+	float: right;
+	width: 50%;
+}
+span.wpcf7-form-control-wrap span.wpcf7-not-valid-tip {
+	position: static;
+	float: right;
+	background: white;
+	border: 1px solid red;
+	font-size: 12pt;
+	width: 100%;
+	padding: 0 2px;
+	margin-top: 8px;
+}
+div.wpcf7-validation-errors {
+	border: 2px solid #ff0000;
+	clear: both;
+}
+div.wpcf7-mail-sent-ok {
+	border: 2px solid #398F14;
+	clear: both;
+}
+
+@media handheld, only screen and (max-width: 767px) {
+	span.wpcf7-form-control-wrap  {
+		width: 99.1%;
+		max-width: 99.1%;
+		min-width: 0;
+	}
+	span.wpcf7-form-control-wrap input[type=text],
+	span.wpcf7-form-control-wrap textarea {
+		width: 100%;
+		clear: both;
+		min-width: 0;
+		float: left !important;
+		margin: 0;
+	}
+}

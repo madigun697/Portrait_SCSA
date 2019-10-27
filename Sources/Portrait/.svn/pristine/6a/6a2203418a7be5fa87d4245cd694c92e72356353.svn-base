@@ -1,0 +1,575 @@
+package org.iptime.madigun697.controller;
+
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.swing.ImageIcon;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
+import org.iptime.madigun697.service.UserService;
+import org.iptime.madigun697.vo.Photo;
+import org.iptime.madigun697.vo.User;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
+import org.json.simple.JSONValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import com.oreilly.servlet.MultipartRequest;
+
+@Controller
+public class PortraitController {
+	
+	@Autowired
+	private UserService userService;
+	
+	private static final long serialVersionUID = 1L;
+	private static final String CLIENT_ID = "376770627633-alfd7mapmlif4s8i1aoca4l1a0l6jijr.apps.googleusercontent.com";
+	private static final String CLIENT_SECRET = "FqIDFxY1zSMaBmDBXyZn7H6G";
+	private static final String CALLBACK_URI = "http://madigun697.iptime.org/Portrait/hello.do";
+	
+	private static final String USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo";
+	private static final String PHOTO_INFO_URL = "https://picasaweb.google.com/data/feed/api/user/";
+	private static final String TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
+	private static final String PHOTO_UPDATE_URL = "https://picasaweb.google.com/data/entry/api/user/";
+	
+	private static final String saveThumnailDirectory = "/thumnail";
+	private static final int maxPostSize = 10 * 1024 * 1024;
+	private static final int maxWidth = 2048;
+	private static final int maxHeight = 2048;
+	private final String boundary = "END_OF_PART";
+	
+	@RequestMapping(value = "index.do")
+	public String index() {
+		return "login";
+	}
+	
+	@RequestMapping(value = "login.do")
+	public String login() {
+		return "login";
+	}
+	
+	/*
+	 * 총 3가지의 경우의 수 존재
+	 * 1. 아직 로그인하지 않은 경우(Authorization Code를 발급받기 위해 로그인 필요) - Interceptor로 처리
+	 * 2. 로그인 절차 직후(Access Token의 발급이 필요) - needAccessToken
+	 * 3. 로그인 상태(Access Token을 이용하여 사진 데이터를 로딩) - logined
+	 * 해당 상태를 session에 Attribute로 부여하여 분기 필요
+	 * 로그인 상태에서 최종적으로 session에서 보유해야하는 값은 access token, userId, albumId, 보여줄 사진 목록
+	 */
+	@RequestMapping(value = "hello.do")
+	public String hello(String code, HttpServletRequest request, HttpSession session) {
+		try {
+			if (code != null && session.getAttribute("token") == null) {
+				
+				// authorization code를 token request로 전달하여 access token 취득
+				String accessToken = getAccessToken(code);
+				session.setAttribute("token", accessToken);
+				
+				// access token을 통해 userId 확인
+				String userId = getUserId(accessToken);
+				session.setAttribute("userId", userId);
+				
+				// 가입 여부 확인
+				// DB에서 userId 검색 (SELECT * FROM USER WHERE USERID = ?), return boolean
+				// albumId 획득
+				String albumId = userService.login(userId);
+				boolean userCheck = albumId == null ? true : false;
+				
+				if (userCheck) {
+					// portrait album 생성 및 album id 획득
+					albumId = createPortraitAlbum(userId, accessToken);
+					// album id를 DB에 저장하여 추후 확인가능하도록 수정
+					User user = new User();
+					user.setUserId(userId);
+					user.setUserName(getUserName(accessToken));
+					user.setpAlbumId(albumId);
+					userService.registryUser(user);
+				}
+				
+				session.setAttribute("albumId", albumId);
+				
+				// 사진 목록 획득
+				List<Photo> photoList = getPhotos(accessToken, userId, albumId);
+				request.setAttribute("photoList", photoList);
+				
+				return "main";
+				
+			} else {
+				
+				// 사진 목록 획득
+				String accessToken = (String) session.getAttribute("token");
+				String userId = (String) session.getAttribute("userId");
+				String albumId = (String) session.getAttribute("albumId");
+						
+				request.setAttribute("photoList", getPhotos(accessToken, userId, albumId));
+				
+				return "main";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "login";
+		}
+	}
+	
+	/*
+	 * 메인 페이지로 이동
+	 */
+	@RequestMapping(value = "main.do")
+	public String main() {
+		return "main";
+	}
+	
+	/*
+	 * 사진 업로드 기능
+	 */
+	@RequestMapping(value = "upload.do")
+	public String upload(HttpServletRequest request, HttpSession session) {
+		// session에서 userId, albumId, access token을 획득
+			String userId = (String) session.getAttribute("userId");
+			String albumId = (String) session.getAttribute("albumId");
+			String access_token = (String) session.getAttribute("token");
+
+			try {
+			// 사진을 보낼 url
+			String upUrl = PHOTO_INFO_URL + userId + "/albumid/" + albumId
+					+ "?access_token=" + access_token;
+
+			// MultipartRequest를 통해 form을 통해 파일 수신
+			MultipartRequest mRequest;
+				mRequest = new MultipartRequest(request, request
+						.getServletContext().getRealPath(saveThumnailDirectory),
+						maxPostSize, "UTF-8");
+
+			// file 이름 확인
+			String originalFileName = mRequest.getOriginalFileName("file");
+
+			// 정상적인 file 저장 확인
+			if (originalFileName == null) {
+				System.out.println("fail");
+			} else {
+				/*
+				 * metadata와 함께 file을 picasa album으로 전송
+				 */
+				HttpClient client = new DefaultHttpClient();
+				HttpPost post = new HttpPost(upUrl);
+
+				File file = mRequest.getFile("file");
+				int width = 0;
+				int height = 0;
+
+				// upload된 image의 width와 height를 확인
+				ImageInputStream in = ImageIO.createImageInputStream(file);
+				try {
+					final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
+					if (readers.hasNext()) {
+						ImageReader reader = readers.next();
+						try {
+							reader.setInput(in);
+							width = reader.getWidth(0);
+							height = reader.getHeight(0);
+						} finally {
+							reader.dispose();
+						}
+					}
+				} finally {
+					if (in != null) in.close();
+				}
+				
+				String path = request
+						.getServletContext().getRealPath(saveThumnailDirectory) + originalFileName;
+				
+				if (width >= maxWidth || height >= maxHeight) {
+					resize(file, path, width, height);
+				}
+				
+				post.addHeader(new BasicHeader("Content-Type",
+						"multipart/related; boundary=" + boundary));
+				post.addHeader(new BasicHeader("MIME-version", "1.0"));
+
+				String metadata = "<entry xmlns='http://www.w3.org/2005/Atom'>"
+						+ "<title>"
+						+ originalFileName // 파일
+						+ "</title>"
+						+ "<summary>"
+						+ "</summary>"
+						+ "<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/photos/2007#photo'></category>"
+						+ "</entry>";
+
+				MultipartEntityBuilder meb = MultipartEntityBuilder.create();
+				meb.setBoundary(boundary);
+				meb.setMode(HttpMultipartMode.STRICT);
+				meb.setCharset(Charset.forName("UTF-8"));
+
+				meb.addTextBody("metadata", metadata,
+						ContentType.create("application/atom+xml"));
+				meb.addBinaryBody("file", file, ContentType.create(URLConnection
+						.guessContentTypeFromName(originalFileName)),
+						originalFileName);
+
+				post.setEntity(meb.build());
+				HttpResponse resp = client.execute(post);
+
+				// 생성 결과
+				StringBuffer responseXml = new StringBuffer();
+				InputStreamReader is = new InputStreamReader(resp.getEntity()
+						.getContent(), "UTF-8");
+				BufferedReader br = new BufferedReader(is);
+
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					responseXml.append(line);
+				}	
+
+				JSONObject photoJSON = XML.toJSONObject(responseXml.toString()).getJSONObject("entry");
+				
+				// response(String)을 parsing해서 geotag 존재 유무 확인 후 geotag 추가
+				if (!photoJSON.has("georss:where")) {
+					String photoId = String.valueOf(photoJSON.getLong("gphoto:id"));
+					String photoVersion = String.valueOf(photoJSON.getInt("gphoto:version"));
+					update(userId, albumId, photoId, access_token, photoVersion);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "redirect:index.do";
+	}
+	
+	/*
+	 * 사진 삭제 기능
+	 */
+	@RequestMapping(value = "delete.do")
+	public String delete(HttpServletRequest request, HttpSession session) throws Exception {
+		
+		String userId = (String) session.getAttribute("userId");
+		String albumId = (String) session.getAttribute("albumId");
+		String access_token = (String) session.getAttribute("token");
+		
+		String photoId = request.getParameter("photoId");
+		
+		// 사진 삭제 url
+		String deleteUrl = PHOTO_UPDATE_URL + userId + "/albumid/" + albumId + "/photoid/" + photoId + "?access_token=" + access_token;
+		
+		HttpClient client = new DefaultHttpClient();
+		HttpDelete delete = new HttpDelete(deleteUrl);
+		delete.addHeader(new BasicHeader("If-Match", "*"));
+		
+		client.execute(delete);
+		
+		return "redirect:index.do";
+	}
+	
+	/*
+	 * 로그인 시 얻은 Authrization code를 Access token으로 교환
+	 */
+	
+	private String getAccessToken(String code) {
+		String accessToken = null;
+		HttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(TOKEN_URI);
+		
+		try {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+			nameValuePairs.add(new BasicNameValuePair("code", code));
+			nameValuePairs.add(new BasicNameValuePair("client_id", CLIENT_ID));
+			nameValuePairs.add(new BasicNameValuePair("client_secret", CLIENT_SECRET));
+			nameValuePairs.add(new BasicNameValuePair("redirect_uri", CALLBACK_URI));
+			nameValuePairs.add(new BasicNameValuePair("grant_type", "authorization_code"));
+			
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			HttpResponse resp = client.execute(post);
+			
+			accessToken = ((org.json.simple.JSONObject) JSONValue.parseWithException(new InputStreamReader(resp.getEntity().getContent()))).get("access_token").toString();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return accessToken;
+	}
+	
+	/*
+	 * Access token을 통해 현재 로그인 한 userId를 획득
+	 */
+	private String getUserId(String access_token) throws Exception {
+		org.json.simple.JSONObject userJson;
+		String userId;
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(USER_INFO_URL + "?access_token=" + access_token);
+		
+		HttpResponse resp = client.execute(get);
+		
+		InputStreamReader is = new InputStreamReader(resp.getEntity().getContent(), "UTF-8");
+
+		userJson = (org.json.simple.JSONObject) JSONValue.parseWithException(is);
+		
+		userId = userJson.get("id").toString();
+		
+		return userId;
+	}
+	
+	/*
+	 * Access token을 통해 현재 로그인 한 userName를 획득
+	 */	
+	private String getUserName(String access_token) throws Exception {
+		org.json.simple.JSONObject userJson;
+		String userName;
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(USER_INFO_URL + "?access_token=" + access_token);
+		
+		HttpResponse resp = client.execute(get);
+		
+		InputStreamReader is = new InputStreamReader(resp.getEntity().getContent(), "UTF-8");
+
+		userJson = (org.json.simple.JSONObject) JSONValue.parseWithException(is);
+		
+		userName = userJson.get("name").toString();
+		
+	 	return userName;
+	}
+	
+	/*
+	 * portrait album 생성
+	 */
+	private String createPortraitAlbum(String userId, String access_token) throws Exception {
+		String albumId = null;
+		
+		// 앨범 생성 시작
+		String createUrl = PHOTO_INFO_URL + userId + "?access_token=" + access_token;
+		HttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(createUrl);
+		
+		post.addHeader(new BasicHeader("GData-Version", "2.0"));
+		
+		// 생성할 앨범 정보 생성
+		String content = 
+				"<entry xmlns='http://www.w3.org/2005/Atom' xmlns:media='http://search.yahoo.com/mrss/' xmlns:gphoto='http://schemas.google.com/photos/2007'>"
+				+ "<title type='text'>Portrait</title>"
+				+ "<summary type='text'>This album is speacial album to management photos through Portrait Application</summary>"
+				+ "<gphoto:location/>"
+				+ "<gphoto:access>private</gphoto:access>"
+				+ "<gphoto:timestamp/>"
+				+ "<media:group>"
+				+ "<media:keywords>Portrait</media:keywords>"
+				+ "</media:group>"
+				+ "<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/photos/2007#album'></category>"
+				+ "</entry>";
+		
+		StringEntity entity = new StringEntity(content);
+		entity.setContentType(new BasicHeader("Content-Type", "application/atom+xml"));
+		
+		post.setEntity(entity);
+		HttpResponse resp = client.execute(post);
+		
+		// 생성 결과에서 AlbumID를 추출
+		StringBuffer responseXml = new StringBuffer();
+		InputStreamReader is = new InputStreamReader(resp.getEntity().getContent(), "UTF-8");
+		BufferedReader br = new BufferedReader(is);
+		
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			responseXml.append(line);
+		}
+		
+		String result = responseXml.toString();
+		
+		JSONObject albumJSON = XML.toJSONObject(responseXml.toString()).getJSONObject("entry");
+		albumId = String.valueOf(albumJSON.getLong("gphoto:id"));
+		
+		return albumId;
+	}
+	
+	/*
+	 * 로그인한 사용자의 Portrait 앨범의 사진 feed를 JSON 객체로 변환하여 Photo List로 return
+	 */
+	private List<Photo> getPhotos(String access_token, String userId, String albumId) throws Exception {
+		
+		List<Photo> photoList = new ArrayList<Photo>();
+		
+		StringBuffer responseXml = new StringBuffer();
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(PHOTO_INFO_URL + userId + "/albumid/" + albumId + "?access_token=" + access_token);
+		
+		HttpResponse resp = client.execute(get);
+		
+		InputStreamReader is = new InputStreamReader(resp.getEntity().getContent(), "UTF-8");
+		BufferedReader br = new BufferedReader(is);
+		
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			responseXml.append(line);
+		}
+		
+		boolean flag = true;
+		
+		if (XML.toJSONObject(responseXml.toString()).has("feed")) {
+			JSONArray photoJSON = null;
+			try {
+				photoJSON = XML.toJSONObject(responseXml.toString()).getJSONObject("feed").getJSONArray("entry");
+			} catch (JSONException e) {
+				photoJSON = new JSONArray();
+				try {
+					photoJSON.put(XML.toJSONObject(responseXml.toString()).getJSONObject("feed").getJSONObject("entry"));
+				} catch (JSONException e2) {
+					flag = false;
+				}
+			}
+			
+			if (flag) {
+				for (int i = 0; i < photoJSON.length(); i++) {
+					org.json.JSONObject photo = photoJSON.getJSONObject(i);
+					Photo temp = new Photo();
+					temp.setTitle(photo.getJSONObject("title").getString("content"));
+					temp.setPhotoId(String.valueOf(photo.getLong("gphoto:id")));
+					temp.setTime(String.valueOf(photo.getInt("gphoto:timestamp")));
+					if (photo.getJSONObject("exif:tags").has("exif:fstop")) {
+						temp.setFstop(String.valueOf(photo.getJSONObject("exif:tags").getInt("exif:fstop")));
+					}
+					if (photo.getJSONObject("exif:tags").has("exif:make")) {
+						temp.setMake(photo.getJSONObject("exif:tags").getString("exif:make"));
+					}
+					if (photo.getJSONObject("exif:tags").has("exif:model")) {
+						temp.setModel(photo.getJSONObject("exif:tags").getString("exif:model"));
+					}
+					if (photo.getJSONObject("exif:tags").has("exif:exposure")) {
+						temp.setExposure(String.valueOf(photo.getJSONObject("exif:tags").getInt("exif:exposure")));
+					}
+					if (photo.getJSONObject("exif:tags").has("exif:iso")) {
+						temp.setIso(String.valueOf(photo.getJSONObject("exif:tags").getInt("exif:iso")));
+					}
+					temp.setPhotoUrl(photo.getJSONObject("content").getString("src"));
+					if (photo.getJSONObject("media:group").getJSONObject("media:description").has("content")) {
+						temp.setDescription(photo.getJSONObject("media:group").getJSONObject("media:description").getString("content"));
+					}
+					if (photo.has("georss:where")) {
+						temp.setGeoTag(photo.getJSONObject("georss:where").getJSONObject("gml:Point").getString("gml:pos"));
+					}
+					photoList.add(temp);
+				}
+			}
+		}
+		
+		return photoList;
+	}
+	
+	private void update(String userId, String albumId, String photoId,
+			String access_token, String photoVersion) throws Exception {
+
+		// 사진을 update url
+		String updateUrl = PHOTO_UPDATE_URL + userId + "/albumid/" + albumId
+				+ "/photoid/" + photoId + "?access_token=" + access_token;
+
+		// Update 내용
+		String geotag = "<entry xmlns='http://www.w3.org/2005/Atom' xmlns:georss='http://www.georss.org/georss' xmlns:gml='http://www.opengis.net/gml'>"
+				+ "<georss:where>"
+				+ "<gml:Point>"
+				+ "<gml:pos>37.69611 127.380149</gml:pos>"
+				+ "</gml:Point>"
+				+ "</georss:where>"
+				+ "<category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/photos/2007#photo'></category>"
+				+ "</entry>";
+
+		// 사진 version update
+		int version = Integer.parseInt(photoVersion) + 1;
+
+		// patch request 생성
+		HttpClient client = new DefaultHttpClient();
+		HttpPatch patch = new HttpPatch(updateUrl);
+
+		// header
+		patch.addHeader(new BasicHeader("Content-Type", "application/xml"));
+		patch.addHeader(new BasicHeader("GData-Version", String
+				.valueOf(version)));
+		patch.addHeader(new BasicHeader("If-Match", "*"));
+
+		// update 내용을 request에 추가
+		StringEntity entity = new StringEntity(geotag);
+
+		patch.setEntity(entity);
+		client.execute(patch);
+
+	}
+	
+	private void resize(File file, String path, int width, int height) throws Exception {
+		// 최대 upload 크기인 2048 * 2048을 초과하는 경우 이미지를 비율에 맞추어 Resize
+		Image image = null;
+		
+		String suffix = file.getName().substring(file.getName().lastIndexOf('.')+1).toLowerCase();
+		
+        if (suffix.equals("bmp") || suffix.equals("png") || suffix.equals("gif")) {
+        	image = ImageIO.read(file);
+        } else {
+            image = new ImageIcon(file.toURL()).getImage();
+        }
+		
+        float ratio = 0;
+        
+        if (width > height) {
+        	ratio = maxWidth/(float)width;
+        } else {
+        	ratio = maxHeight/(float)height;
+        }
+        
+		width = (int)(width*ratio);
+		height = (int)(height*ratio);
+		
+		Image resizedImg = image.getScaledInstance(width, height, image.SCALE_SMOOTH);
+		
+		int pixels[] = new int[width * height]; 
+        PixelGrabber pg = new PixelGrabber(resizedImg, 0, 0, width, height, pixels, 0, width); 
+        try {
+            pg.grabPixels();
+        } catch (InterruptedException e) {
+            throw new IOException(e.getMessage());
+        } 
+        BufferedImage destImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); 
+        destImg.setRGB(0, 0, width, height, pixels, 0, width); 
+		
+		File resizedFile = new File(path);
+		ImageIO.write(destImg, suffix, file);
+		
+	}
+
+}

@@ -1,0 +1,12 @@
+package org.iptime.madigun697.service;
+
+import java.util.List;
+
+import org.iptime.madigun697.vo.Photo;
+
+public interface PhotoService {
+
+	// picasa와 portrait의 사진 동기화
+	void syncPhoto(List<Photo> photoList);
+
+}

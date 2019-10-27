@@ -1,0 +1,62 @@
+<%@page import="org.iptime.madigun697.util.AuthHelper"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Portrait</title>
+<script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+<style>
+body {
+	font-family: Sans-Serif;
+	margin: 1em;
+}
+
+.oauthDemo a {
+	display: block;
+	border-style: solid;
+	border-color: #bbb #888 #666 #aaa;
+	border-width: 1px 2px 2px 1px;
+	background: #ccc;
+	color: #333;
+	line-height: 2;
+	text-align: center;
+	text-decoration: none;
+	font-weight: 900;
+	width: 13em;
+}
+
+.oauthDemo pre {
+	background: #ccc;
+}
+
+.oauthDemo a:active {
+	border-color: #666 #aaa #bbb #888;
+	border-width: 2px 1px 1px 2px;
+	color: #000;
+}
+
+.readme {
+	padding: .5em;
+	background-color: #F9AD81;
+	color: #333;
+}
+</style>
+</head>
+<body>
+svn test
+	<div class="oauthDemo">
+		<%
+			final AuthHelper helper = new AuthHelper();
+
+				out.println("<a href='" + helper.buildLoginUrl()
+						+ "'>log in with google</a>");
+				
+				out.println("<pre>");
+				 
+				out.println("</pre>");
+
+				session.setAttribute("state", helper.getStateToken());
+		%>
+</body>
+</html>
