@@ -12,3 +12,11 @@ People usually store photos in hardware with the directory structure. However, t
 Picasa, one of the Google services, provide infinite storage for people with limitation of photo's size. As using Picasa service, Portrait service secures the storage for user's photos. Furthermore, uploading photos with EXIF information and tags. EXIF information already has a date, location information. It makes the portrait can sort photos chronological order and filter by location. User-defined tags are more useful to group the photo into a specific theme.
 
 Portrait service tries to provide added values. One of the added values is the Auto-generated album function. Portrait service groups photos by various levels of date and location. Users can generate a timeline comprising user-generated photo groups by chronological order. All albums can share with other users.
+
+## Team Members
+
+Minkyung Kim: Project management, UI Design & Development, Search function
+Yula Seo: UI Development, Sharing/Event function
+Joohyung You: Back-end Development, OAuth, Technical management
+Junmo Choi: UI Development, Upload function, Android application development
+Donghun Han: UI Development, GPS Location function, Android application development
